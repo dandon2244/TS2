@@ -51,10 +51,17 @@ class Line {
 	//this.render.addSubObject(this.square)
 	
   }
+  clearInters(){
+	  for (const [key, value] of Object.entries(this.inters)) {
+			value.delete();
+			this.inters[key] =  null;
+}
+  }
   distanceFromPoint(p){
 	  var perp = this.vector.rotate(90).normalise();
 	  var l = new Line(this.game,this.centre.copy(),perp,null);
 	  var i = l.intersect(this);
+	  l.delete();
 	  return i.distanceBetween(p);
 	  
   }
@@ -79,6 +86,9 @@ class Line {
 	  return new Line(this.game,[this.begPoint.copy(),this.endPoint.copy()])
 	  }
 	  return new Line(this.game,this.centre.copy(),this.vector.copy(),null)
+  }
+  extend(){
+	  return new Line(this.game,this.centre.copy(),this.vector.copy(),null);
   }
   intersect(other){
 	  var oID = other.id;

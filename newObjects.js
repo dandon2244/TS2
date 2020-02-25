@@ -7,6 +7,11 @@ class object {
     this.absPos = this.relPos.copy();
     this.type = type;
     this.size = typeof size != "undefined" ? size : [0, 0];
+	if(this.type == "CIRCLE"){
+		if(this.size.length ==1){
+			this.size = [this.size[0],0,2*Math.PI]
+		}
+	}
     this.colour = colour;
     this.subObjects = [];
     this.id = id;

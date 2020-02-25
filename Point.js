@@ -30,6 +30,9 @@
     this.z += vec.z;
   }
   distanceBetween(other){
+	   if(other == null || other.constructor.name!="Point"){
+		   return null;
+	   }
 	  return this.vectorTo(other).mag();
   }
   vectorTo(other){
