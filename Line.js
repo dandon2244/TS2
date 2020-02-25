@@ -91,6 +91,11 @@ class Line {
 	  return new Line(this.game,this.centre.copy(),this.vector.copy(),null);
   }
   intersect(other){
+	  if(!other){
+	console.log("YO");
+	return null;
+	}
+
 	  var oID = other.id;
 	   if(oID in this.inters){
 		removeFromArray(this.inters[oID],this.render.subObjects)
