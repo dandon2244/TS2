@@ -1564,10 +1564,12 @@ class roadManager{
 		var endRoad = road2.end.absPos.copy();
 		endRoad =[lE.distanceFromPoint(endRoad),rE.distanceFromPoint(endRoad)];
 		if(endRoad[0] < endRoad[1]){
-			var endLine =lE
+			var endLine =lE;
+			var begLine = rE;
 		}
 		else{
 			var endLine = rE;
+			var begLine = lE;
 		}
 		var lengths = [road2.lineL.intersect(endLine)];
 		lengths.push(road2.lineR.intersect(endLine));
@@ -1586,9 +1588,21 @@ class roadManager{
 			var r = new Road(road1.game,[otherP.add(otherV.times(-lengths[1])),otherP])
 			
 		}
-		lE.delete();
-		rE.delete();
+		otherP= road2.Points[0].copy();
+		lengths = [road2.lineL.intersect(begLine)]
+		lengths.push(road2.lineR.intersect(begLine));
+		lengths[0] = lengths[0].distanceBetween(road2.lineL.begPoint);
+		lengths[1] = lengths[1].distanceBetween(road2.lineR.begPoint);
+		lengths = Math.max(lengths[0],lengths[1]);
+		var r = new Road(road1.game,[otherP,otherP.add(otherV.times(lengths))]);
+		//road2.lineR.clearInters();
+		//road2.lineL.clearInters();
+		
+
+		//lE.delete();
+		//rE.delete();
 		road1.lineStuff();
+		road2.delete();
 	}
 }
 
