@@ -41,7 +41,9 @@ this.end = new object(this.game,this.Points[1].minus(vec.times(10)),"RECT",[20,t
 	this.end.setAbsPos(this.end.relPos);
 this.mRoad.angle = this.angle;
 this.mRoad.transparency = 0.7;
-     
+     if(Points.length == 2){
+		 this.lineStuff();
+	 }
 	
   }
 
@@ -64,7 +66,7 @@ this.mRoad.transparency = 0.7;
     this.length = Math.sqrt(this.length);
 	 this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
 	 var target = this.Points[0].add(this.Points[1]).times(1/2)
-    if(this.mRoad){
+    
 		this.mRoad.absPos = this.centre.copy();
        this.mRoad.size[0] = this.length;
        this.mRoad.angle = this.angle;
@@ -86,7 +88,7 @@ this.mRoad.transparency = 0.7;
 	   this.mRoad.addSubObject(this.end);
 	   endRef.delete()
 	  
-	}
+
   }
   setAngle(ang) {
     this.mRoad.rotate(ang, false);
@@ -96,19 +98,11 @@ this.mRoad.transparency = 0.7;
     this.game.roads.splice(this.game.roads.indexOf(this),1);
   }
   changePoint(point) {
-
-
 	this.beg.rendering=false;
 	this.end.rendering = false;
     this.mRoad.subObjects[1].colour = "red";
-	//this.mRoad.transparency = 1;
-	this.creating = false;
     this.Points[1] = point;
     this.updateAttributes(point);
-	//console.log(this.angle)
-    this.mRoad.absPos = this.centre;
-    this.mRoad.size[0] = this.length;
-    this.mRoad.angle = this.angle;
 	this.lineStuff();
 	var inters = [];
 	this.game.roads.forEach((road)=> {
@@ -148,50 +142,10 @@ this.mRoad.transparency = 0.7;
 				this.incomeR = inters[0].lineR;
 			}
 		}
-		var lE = this.lineL.extend();
-		var rE = this.lineR.extend();
-		var lengths = [this.lineL.begPoint.distanceBetween(lE.intersect(this.incomeR)),this.lineR.begPoint.distanceBetween(rE.intersect(this.incomeR))]
-		var length = Math.max(lengths[0],lengths[1])
-		//rE.delete();
-		//lE.delete();
-	  //  var lInter = this.lineL.intersect(this.incomeR)
-		//var interPoint = nLine.intersect(inters[0].line);
-		//nLine.delete();
-		this.updateAttributes(this.line.begPoint.add(this.line.vector.times(length)));
-		var endRoad = otherRoad.end.absPos.copy();
-		endRoad =[lE.distanceFromPoint(endRoad),rE.distanceFromPoint(endRoad)];
-		if(endRoad[0] < endRoad[1]){
-			var endLine =lE
-		}
-		else{
-			var endLine = rE;
-		}
-		new object(this.game,otherRoad.end.absPos.copy(),"CIRCLE",[5],"green")
-		var lengths = [otherRoad.lineL.intersect(endLine)];
-		lengths.push(otherRoad.lineR.intersect(endLine));
-		lengths[0] = lengths[0].distanceBetween(otherRoad.lineL.endPoint);
-		lengths[1] = lengths[1].distanceBetween(otherRoad.lineR.endPoint);
-		otherRoad.lineR.clearInters();
-		otherRoad.lineL.clearInters();
-		var otherV = otherRoad.line.vector.copy();
-		var otherP = otherRoad.Points[1].copy();
-		//otherRoad.delete();
-		if(lengths[0]>lengths[1]){
-			var r =new Road(this.game,[otherP.add(otherV.times(-lengths[0])),otherP])
-			
-		}
-		else{
-			var r = new Road(this.game,[otherP.add(otherV.times(-lengths[1])),otherP])
-			
-		}
-		console.log(r.Points[0].toString());
-		//this.beg.rendering = false;
-		//this.end.rendering = false;
-		
-		//this.rightPath = new object(t)
-		//console.log(leftCent.toString());
+		roadManager.intersect(this,otherRoad)
+	
 	}
-	//console.log(inters.length);
+	
 	var perp = this.line.vector.rotate(90).normalise();
 		var leftCent = this.centre.copy()
 		leftCent.move(perp.times(this.mRoad.size[1]/4));
@@ -209,15 +163,25 @@ this.mRoad.transparency = 0.7;
 		this.rightPath.rendering = false;
   }
   lineStuff(){
-	  this.line = new Line(this.game,this.Points);
-	var perp = Maths.normalize(this.line.vector.rotate(90))
-	var lBeg = this.line.begPoint.add(perp.times(this.mRoad.size[1]/2))
-	var rBeg = this.line.begPoint.minus(perp.times(this.mRoad.size[1]/2))
-	this.lineL = new Line(this.game,lBeg,this.line.vector.copy(),this.line.length,true);
-	this.lineR = new Line(this.game,rBeg,this.line.vector.copy(),this.line.length,true);
-	this.mRoad.addSubObject(this.lineL.render);
-	this.mRoad.addSubObject(this.lineR.render);
-	this.mRoad.addSubObject(this.line.render);
-	this.line.render.rendering =false;  
+		var perp = Maths.normalize(this.Points[0].vectorTo(this.Points[1]).rotate(90))
+		var lBeg = this.Points[0].add(perp.times(this.mRoad.size[1]/2))
+		var lEnd = this.Points[1].add(perp.times(this.mRoad.size[1]/2))
+		var rBeg = this.Points[0].minus(perp.times(this.mRoad.size[1]/2))
+		var rEnd = this.Points[1].minus(perp.times(this.mRoad.size[1]/2))
+	  if(this.line){
+		this.line.setPoints(this.Points)
+		this.lineL.setPoints([lBeg,lEnd]);
+		this.lineR.setPoints([rBeg,rEnd]);
+		
+	  }
+	  else{
+		  this.line = new Line(this.game,this.Points);
+		  this.lineL = new Line(this.game,[lBeg,lEnd])
+		  this.lineR = new Line(this.game,[rBeg,rEnd]);
+		  this.mRoad.addSubObject(this.lineL.render);
+		  this.mRoad.addSubObject(this.lineR.render);
+		  this.mRoad.addSubObject(this.line.render);	
+	  }
+
   }
 }

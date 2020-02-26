@@ -136,12 +136,10 @@ class Game {
       return a.absPos.z - b.absPos.z;
     });
     this.map.update();
-	this.roads.forEach(function(obj){
-		if(obj.creating){
-		obj.updateAttributes(obj.game.camera.screenToGamePos(obj.game.mousePos));
-		//console.log(obj.game.camera.screenToGamePos(obj.game.mousePos));
-		}
-	})
+	if(this.road){
+		this.road.updateAttributes(this.camera.screenToGamePos(this.mousePos));
+	}
+	
     if (this.camera.position.z < 0.0) {
       this.camera.position.z = 0.0;
     }

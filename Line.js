@@ -53,9 +53,19 @@ class Line {
   }
   clearInters(){
 	  for (const [key, value] of Object.entries(this.inters)) {
+			if(value&&value instanceof Object){
 			value.delete();
+			}
 			this.inters[key] =  null;
 }
+  }
+  setPoints(Points){
+	  this.Points = [Points[0].copy(),Points[1].copy()]
+	  this.begPoint = this.Points[0];
+	  this.endPoint = this.Points[1];
+	  this.vector = this.begPoint.vectorTo(this.endPoint);
+	  this.anle = this.vector.getAngle();
+	  this.centre = this.begPoint.add(this.endPoint).times(1/2);
   }
   distanceFromPoint(p){
 	  var perp = this.vector.rotate(90).normalise();
