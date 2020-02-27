@@ -26,8 +26,8 @@ class roadManager{
 		lI.z+=10;
 		var lengths = [road1.lineL.begPoint.distanceBetween(lI.copy()),road1.lineR.begPoint.distanceBetween(rI.copy())]
 		var length = Math.max(lengths[0],lengths[1]);
-		lE.clearInters();
-		rE.clearInters();
+		//lE.clearInters();
+		//rE.clearInters();
 		road1.updateAttributes(road1.line.begPoint.add(road1.line.vector.times(length)));
 
 		

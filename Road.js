@@ -148,11 +148,13 @@ this.mRoad.transparency = 0.7;
 		  this.line = new Line(this.game,this.Points);
 		  //this.line.render.rendering = false;
 		  this.lineL = new Line(this.game,[lBeg,lEnd])
-		  this.lineR = new Line(this.game,[rBeg,rEnd]);
+		  //var lE =this.lineL.extend();
+		 // lE.render.setAbsPos(new Point(0,0));
+		  this.lineR = new Line(this.game,[rBeg,rEnd]) ;
 		  //this.lineL.extend();
 		  this.mRoad.addSubObject(this.lineL.render);
 		  this.mRoad.addSubObject(this.lineR.render);
-		  this.mRoad.addSubObject(this.lineL.extend().render);
+		 // this.mRoad.addSubObject(lE.render);
 		  this.mRoad.addSubObject(this.line.render);	
 	  }
 

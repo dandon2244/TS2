@@ -103,8 +103,9 @@ class object {
   subElements(obj) {
     for (var x = 0; x < obj.subObjects.length; x++) {
       if (!obj.subObjects[x].inited){
-		
+	if(obj.subObjects[x].type!="LINE"){
         obj.subObjects[x].absPos.move(obj.absPos)
+	}
 		
         obj.subObjects[x].inited = true;
       }

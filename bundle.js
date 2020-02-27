@@ -1046,8 +1046,9 @@ class object {
   subElements(obj) {
     for (var x = 0; x < obj.subObjects.length; x++) {
       if (!obj.subObjects[x].inited){
-		
+	if(obj.subObjects[x].type!="LINE"){
         obj.subObjects[x].absPos.move(obj.absPos)
+	}
 		
         obj.subObjects[x].inited = true;
       }
@@ -1502,11 +1503,13 @@ this.mRoad.transparency = 0.7;
 		  this.line = new Line(this.game,this.Points);
 		  //this.line.render.rendering = false;
 		  this.lineL = new Line(this.game,[lBeg,lEnd])
-		  this.lineR = new Line(this.game,[rBeg,rEnd]);
+		  //var lE =this.lineL.extend();
+		 // lE.render.setAbsPos(new Point(0,0));
+		  this.lineR = new Line(this.game,[rBeg,rEnd]) ;
 		  //this.lineL.extend();
 		  this.mRoad.addSubObject(this.lineL.render);
 		  this.mRoad.addSubObject(this.lineR.render);
-		  this.mRoad.addSubObject(this.lineL.extend().render);
+		 // this.mRoad.addSubObject(lE.render);
 		  this.mRoad.addSubObject(this.line.render);	
 	  }
 
@@ -1541,8 +1544,8 @@ class roadManager{
 		lI.z+=10;
 		var lengths = [road1.lineL.begPoint.distanceBetween(lI.copy()),road1.lineR.begPoint.distanceBetween(rI.copy())]
 		var length = Math.max(lengths[0],lengths[1]);
-		lE.clearInters();
-		rE.clearInters();
+		//lE.clearInters();
+		//rE.clearInters();
 		road1.updateAttributes(road1.line.begPoint.add(road1.line.vector.times(length)));
 
 		
