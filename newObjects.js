@@ -103,7 +103,9 @@ class object {
   subElements(obj) {
     for (var x = 0; x < obj.subObjects.length; x++) {
       if (!obj.subObjects[x].inited){
+		
         obj.subObjects[x].absPos.move(obj.absPos)
+		
         obj.subObjects[x].inited = true;
       }
       this.subElements(obj.subObjects[x]);
@@ -189,8 +191,16 @@ class object {
 		var end = this.line.endPoint.minus(this.absPos)
 		}
 		else{
-		var beg = this.line.vector.times(2000)
-		var end = this.line.vector.times(-2000)
+		if(this.supe==null){
+			var beg = this.line.vector.times(2000);
+			var end = this.line.vector.times(-2000);
+			}
+		else{
+			//this.absPos = this.relPos.copy();
+			var beg = this.line.vector.times(2000)
+			var end =this.line.vector.times(-2000)
+		}
+		
 		}
 		this.game.context.beginPath();
 		this.game.context.lineWidth = this.line.width/z

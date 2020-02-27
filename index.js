@@ -118,7 +118,7 @@ class Game {
     }
   }
   secondUpdate() {
-	//console.log(this.log)
+		//console.log(this.frames);
   }
 
   changeMouseMode(type) {

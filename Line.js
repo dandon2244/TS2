@@ -24,6 +24,7 @@ class Line {
 
 	   
 		if(this.length!= null){
+			
 			if(this.beg){
 				this.begPoint = point.copy();
 				this.centre = this.begPoint.add(this.vector.times(length/2));
@@ -63,7 +64,7 @@ class Line {
 	  this.Points = [Points[0].copy(),Points[1].copy()]
 	  this.begPoint = this.Points[0];
 	  this.endPoint = this.Points[1];
-	  this.vector = this.begPoint.vectorTo(this.endPoint);
+	  this.vector = Maths.normalize(this.begPoint.vectorTo(this.endPoint));
 	  this.anle = this.vector.getAngle();
 	  this.centre = this.begPoint.add(this.endPoint).times(1/2);
   }

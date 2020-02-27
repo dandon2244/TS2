@@ -1,7 +1,7 @@
 class Map {
   constructor(game) {
     this.game = game;
-    this.size = 230;
+    this.size = 500;
     this.xValues = this.game.objects.map(o => o.getPoints().map(p => p.x));
     this.xValues = [].concat.apply([], this.xValues);
     this.yValues = this.game.objects.map(o => o.getPoints().map(p => p.y));

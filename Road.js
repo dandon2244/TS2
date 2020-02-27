@@ -3,7 +3,7 @@
     this.game = game;
     this.game.roads.push(this);
     this.Points = Points;
-    this.width = 200;
+    this.width = 130;
 	
 	this.creating = false;
 	if(Points.length == 1){
@@ -31,7 +31,7 @@ this.end = new object(this.game,this.Points[1].minus(vec.times(10)),"RECT",[20,t
       this.game,
       this.centre,
       "RECT",
-      [this.length, 200],
+      [this.length, this.width],
       "black","road",true
     );
 	
@@ -43,6 +43,7 @@ this.mRoad.angle = this.angle;
 this.mRoad.transparency = 0.7;
      if(Points.length == 2){
 		 this.lineStuff();
+		 roadManager.createPaths(this);
 	 }
 	
   }
@@ -118,49 +119,18 @@ this.mRoad.transparency = 0.7;
 		}
 	}
 	);
+	this.line.clearInters();
 	if(inters.length>1){
 		this.delete();
 		return;
 	}
 	if(inters.length == 1){
 		var otherRoad = inters[0];
-		var nLine = new Line(this.game,this.line.centre.copy(),this.line.vector.copy(),null);
-		var lengths = [nLine.intersect(inters[0].lineL),nLine.intersect(inters[0].lineR)]
-		nLine.delete();
-		if(lengths[0] == null){
-			this.incomeR = inters[0].lineR;
-		}
-		else if(lengths[1] == null){
-			this.incomeR = inters[0].lineL;
-		}
-		else{
-			lengths = lengths.map(x=>x.distanceBetween(this.line.centre));
-			if(lengths[0]<lengths[1]){
-				this.incomeR = inters[0].lineL;
-			}
-			else{
-				this.incomeR = inters[0].lineR;
-			}
-		}
 		roadManager.intersect(this,otherRoad)
 	
 	}
 	
-	var perp = this.line.vector.rotate(90).normalise();
-		var leftCent = this.centre.copy()
-		leftCent.move(perp.times(this.mRoad.size[1]/4));
-		this.leftPath = new object(this.game,new Point(0,0),"RECT",[this.length,this.mRoad.size[1]/2],"yellow");
-		this.leftPath.angle = this.angle;
-		this.mRoad.addSubObject(this.leftPath);
-		this.leftPath.setAbsPos(leftCent);
-		this.rightPath = new object(this.game,new Point(0,0),"RECT",[this.length,this.mRoad.size[1]/2],"orange");
-		var rightCent = this.centre.copy();
-		rightCent.move(perp.times(-this.mRoad.size[1]/4));
-		this.mRoad.addSubObject(this.rightPath);
-		this.rightPath.setAbsPos(rightCent);
-		this.rightPath.angle = this.angle;
-		this.leftPath.rendering = false;
-		this.rightPath.rendering = false;
+	roadManager.createPaths(this);
   }
   lineStuff(){
 		var perp = Maths.normalize(this.Points[0].vectorTo(this.Points[1]).rotate(90))
@@ -176,10 +146,13 @@ this.mRoad.transparency = 0.7;
 	  }
 	  else{
 		  this.line = new Line(this.game,this.Points);
+		  //this.line.render.rendering = false;
 		  this.lineL = new Line(this.game,[lBeg,lEnd])
 		  this.lineR = new Line(this.game,[rBeg,rEnd]);
+		  //this.lineL.extend();
 		  this.mRoad.addSubObject(this.lineL.render);
 		  this.mRoad.addSubObject(this.lineR.render);
+		  this.mRoad.addSubObject(this.lineL.extend().render);
 		  this.mRoad.addSubObject(this.line.render);	
 	  }
 

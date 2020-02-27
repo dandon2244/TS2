@@ -43,12 +43,7 @@ static genKeyFunctions() {
 
   keyFunctions["l"] = function(type, game) {
 	  if(type == "TAPPED"){
-	    for(var x = 0;x<game.objects.length;x++){
-			var o = game.objects[x];
-			if(o.type == "CIRCLE"&& o.colour=="green"){
-				o.supe.deleteAll();
-			}
-		}
+	   
 	  }
   };
   keyFunctions["s"] = function(type, game) {
