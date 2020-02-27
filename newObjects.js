@@ -325,6 +325,9 @@ class object {
   delete() {
 	if(this.game.objects.includes(this)){
     this.game.objects.splice(this.game.objects.indexOf(this), 1);
+	if(this.line){
+	this.line.delete();
+}
 	}
 
   }

@@ -46,18 +46,16 @@ class roadManager{
 		lengths.push(road2.lineR.intersect(endLine));
 		lengths[0] = lengths[0].distanceBetween(road2.lineL.endPoint);
 		lengths[1] = lengths[1].distanceBetween(road2.lineR.endPoint);
-		//begLine.clearInters();
-		//road2.lineR.clearInters();
-		//road2.lineL.clearInters();
+		
 		var otherV = road2.line.vector.copy();
 		var otherP = road2.Points[1].copy();
-		//otherRoad.delete();
+		
 		if(lengths[0]>lengths[1]){
-			var r =new Road(road1.game,[otherP.add(otherV.times(-lengths[0])),otherP])
+			var endRoad =new Road(road1.game,[otherP.add(otherV.times(-lengths[0])),otherP])
 			
 		}
 		else{
-			var r = new Road(road1.game,[otherP.add(otherV.times(-lengths[1])),otherP])
+			var endRoad = new Road(road1.game,[otherP.add(otherV.times(-lengths[1])),otherP])
 			
 		}
 		otherP= road2.Points[0].copy();
@@ -66,7 +64,7 @@ class roadManager{
 		lengths[0] = lengths[0].distanceBetween(road2.lineL.begPoint);
 		lengths[1] = lengths[1].distanceBetween(road2.lineR.begPoint);
 		lengths = Math.max(lengths[0],lengths[1]);
-		var r = new Road(road1.game,[otherP,otherP.add(otherV.times(lengths))]);
+		var begRoad = new Road(road1.game,[otherP,otherP.add(otherV.times(lengths))]);
 		//road2.lineR.clearInters();
 		//road2.lineL.clearInters();
 		var lC = lE.centre.copy();
@@ -85,6 +83,7 @@ class roadManager{
 		//rE.delete();
 		road1.lineStuff();
 		road2.delete();
+		return [begRoad,endRoad]
 	}
 	
 	static createPaths(road){
@@ -103,6 +102,13 @@ class roadManager{
 		road.rightPath.angle = road.angle;
 		road.leftPath.transparency = 0.5;
 		road.rightPath.transparency = 0.5;
-		//road.leftL = new Line()
+		road.leftL = new Line(road.game,road.leftPath.absPos.copy(),road.line.vector.copy(),road.length,false);
+		road.leftPath.addSubObject(road.leftL.render);
+		road.rightL = new Line(road.game,road.rightPath.absPos.copy(),road.line.vector.copy(),road.length,false);
+		road.rightPath.addSubObject(road.rightL.render);
 	}
+	static interway(road,others){
+		
+	}
+
 }

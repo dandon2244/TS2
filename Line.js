@@ -141,14 +141,16 @@ class Line {
 		  if((this.pointOnLine(intPoint)&&other.pointOnLine(intPoint))){
 			  
 	  
-			  this.inters[oID] = new object(this.game,new Point(0,0),"CIRCLE",[10,0,2*Math.PI],"green");
+			  this.inters[oID] = new object(this.game,new Point(0,0),"CIRCLE",[7,0,2*Math.PI],"green");
 			//  console.log(this.id,other.id)
 			 // console.log(this,other)
 			 this.render.addSubObject(this.inters[oID])
 			 // console.log(this.inter.absPos.toString())
 			 this.inters[oID].setAbsPos(intPoint);
+			 this.inters[oID].absPos.z+=10;
 			// console.log(this.inter.absPos);
 			//console.log(this.inters[other].absPos.toString());
+
 			  return this.inters[oID].absPos.copy();
 		  }
 	  }
