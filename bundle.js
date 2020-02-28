@@ -1609,6 +1609,8 @@ class roadManager{
 		//rE.delete();
 		road1.lineStuff();
 		road2.delete();
+		lE.delete();
+		rE.delete();
 		return [begRoad,endRoad]
 	}
 	
@@ -1634,19 +1636,35 @@ class roadManager{
 		road.rightPath.addSubObject(road.rightL.render);
 	}
 	static interway(road,others){
-		var lE = others[0].lineL.extend();
-		var rE = others[0].lineR.extend();
+		var begRoad = others[0]
+		var endRoad = others[1]
+		var lE = begRoad.lineL.extend();
+		var rE = endRoad.lineR.extend();
 		if(lE.intersect(road.line)==null){
 			var incomeR = rE
 		}
 		else{
 			var incomeR = lE
 		}
-		incomeR.render.colour ="red";
-		lE.clearInters();
+		lE.render.rendering = false;
+		rE.render.rendering = false;
 		
 		road.leftL.intersect(incomeR);
 		road.rightL.intersect(incomeR);
+		if(begRoad.line.intersect(road.leftL)==null){
+			var incomeB = road.lineR.extend();
+			var incomeE = road.lineL.extend();
+		}
+		else{
+			var incomeB = road.lineL.extend();
+			var incomeE = road.lineR.extend();
+		}
+		
+		incomeB.render.colour = "red";
+		var c = begRoad.leftL.intersect(incomeB);
+		begRoad.rightL.intersect(incomeB);
+		endRoad.leftL.intersect(incomeE);
+		endRoad.rightL.intersect(incomeE);
 		
 	}
 
