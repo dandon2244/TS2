@@ -201,7 +201,7 @@ class Camera {
   }
 }
 
-const keyCodes = {
+﻿const keyCodes = {
   0: "That key has no keycode",
   3: "break",
   8: "backspace / delete",
@@ -380,7 +380,8 @@ const keyCodes = {
 const mouseModes = {
   auto: "auto",
   roadGreen: "url('GreenCursor.png'),auto",
-  carSelect:"auto"
+  carSelect:"auto",
+  delete:"auto"
 };
 
 
@@ -414,9 +415,7 @@ static genKeyFunctions() {
   };
   keyFunctions["d"] = function(type, game) {
     if (type == "TAPPED") {
-      if (game.roads[game.roads.length - 1]) {
-        game.roads[game.roads.length - 1].delete();
-      }
+      game.changeMouseMode("delete");
     }
   };
   keyFunctions["a"] = function(type,game){
@@ -476,7 +475,15 @@ static processMouse(game, point) {
      
       }
     }
+    
   }
+  else if(game.mouseMode == "delete"){
+	for(var i = 0;i<game.roads.length;i++){
+		if(game.roads[i].mRoad.pointWithinRender(point)){	
+			game.roads[i].delete();
+		}
+	}
+}
   else if(game.mouseMode == "carSelect"){
 	  game.selected.select(false);
 	  game.selected =  null;

@@ -29,9 +29,7 @@ static genKeyFunctions() {
   };
   keyFunctions["d"] = function(type, game) {
     if (type == "TAPPED") {
-      if (game.roads[game.roads.length - 1]) {
-        game.roads[game.roads.length - 1].delete();
-      }
+      game.changeMouseMode("delete");
     }
   };
   keyFunctions["a"] = function(type,game){
@@ -91,7 +89,15 @@ static processMouse(game, point) {
      
       }
     }
+    
   }
+  else if(game.mouseMode == "delete"){
+	for(var i = 0;i<game.roads.length;i++){
+		if(game.roads[i].mRoad.pointWithinRender(point)){	
+			game.roads[i].delete();
+		}
+	}
+}
   else if(game.mouseMode == "carSelect"){
 	  game.selected.select(false);
 	  game.selected =  null;

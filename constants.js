@@ -1,4 +1,4 @@
-const keyCodes = {
+﻿const keyCodes = {
   0: "That key has no keycode",
   3: "break",
   8: "backspace / delete",
@@ -177,5 +177,6 @@ const keyCodes = {
 const mouseModes = {
   auto: "auto",
   roadGreen: "url('GreenCursor.png'),auto",
-  carSelect:"auto"
+  carSelect:"auto",
+  delete:"auto"
 };
