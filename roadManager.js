@@ -108,6 +108,19 @@ class roadManager{
 		road.rightPath.addSubObject(road.rightL.render);
 	}
 	static interway(road,others){
+		var lE = others[0].lineL.extend();
+		var rE = others[0].lineR.extend();
+		if(lE.intersect(road.line)==null){
+			var incomeR = rE
+		}
+		else{
+			var incomeR = lE
+		}
+		incomeR.render.colour ="red";
+		lE.clearInters();
+		
+		road.leftL.intersect(incomeR);
+		road.rightL.intersect(incomeR);
 		
 	}
 

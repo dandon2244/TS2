@@ -126,11 +126,14 @@ this.mRoad.transparency = 0.7;
 	}
 	if(inters.length == 1){
 		var otherRoad = inters[0];
-		roadManager.intersect(this,otherRoad)
+		var others = roadManager.intersect(this,otherRoad)
 	
 	}
 	
 	roadManager.createPaths(this);
+	if(inters.length ==1){
+		roadManager.interway(this,others)
+	}
   }
   lineStuff(){
 		var perp = Maths.normalize(this.Points[0].vectorTo(this.Points[1]).rotate(90))
