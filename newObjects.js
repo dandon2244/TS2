@@ -192,16 +192,8 @@ class object {
 		var end = this.line.endPoint.minus(this.absPos)
 		}
 		else{
-		if(this.supe==null){
-			var beg = this.line.vector.times(2000);
-			var end = this.line.vector.times(-2000);
-			}
-		else{
-			//this.absPos = this.relPos.copy();
 			var beg = this.line.vector.times(2000)
 			var end =this.line.vector.times(-2000)
-		}
-		
 		}
 		this.game.context.beginPath();
 		this.game.context.lineWidth = this.line.width/z
