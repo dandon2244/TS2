@@ -57,7 +57,7 @@ class Line {
 			if(value&&value instanceof Object){
 			value.delete();
 			}
-			this.inters[key] =  null;
+			this.inters = {};
 }
   }
   setPoints(Points){
@@ -65,8 +65,9 @@ class Line {
 	  this.begPoint = this.Points[0];
 	  this.endPoint = this.Points[1];
 	  this.vector = Maths.normalize(this.begPoint.vectorTo(this.endPoint));
-	  this.anle = this.vector.getAngle();
+	  this.angle = this.vector.getAngle();
 	  this.centre = this.begPoint.add(this.endPoint).times(1/2);
+	  this.length = this.begPoint.distanceBetween(this.endPoint);
   }
   distanceFromPoint(p){
 	  var perp = this.vector.rotate(90).normalise();
@@ -87,6 +88,9 @@ class Line {
 	  if(this.length!=null){
 		  this.begPoint = this.centre.minus(this.vector.times(this.length/2))
 		  this.endPoint = this.centre.add(this.vector.times(this.length/2))
+		  this.length = this.begPoint.distanceBetween(this.endPoint);
+		  this.vector = this.begPoint.vectorTo(this.endPoint).normalise();
+		  this.angle = this.vector.getAngle();
 	  }
 	 
 	 // this.game.log = this.render.absPos.minus(this.square.absPos).toString();
@@ -135,9 +139,21 @@ class Line {
 		  var d =  other.centre.y;
 		  var e = other.vector.x;
 		  var f = other.vector.y;
+		  if(a == 0){
+			  if(b == 0){
+				  return null;
+				  
+			  }
+			  var mu = (x+(d-y)*a/b -c)/(e-a*f/b);
+		  }
+		  else{
 		  var mu = (y+(c-x)*b/a - d)/(f-b*e/a);
+		  }
 		  var intPoint = other.centre.add(other.vector.times(mu))
 		  intPoint.z+=1;
+		 // if(!mu){
+			 // console.log("HERE");
+		  //}
 		  if((this.pointOnLine(intPoint)&&other.pointOnLine(intPoint))){
 			  
 	  
@@ -148,6 +164,7 @@ class Line {
 			 // console.log(this.inter.absPos.toString())
 			 this.inters[oID].setAbsPos(intPoint);
 			 this.inters[oID].absPos.z+=10;
+			 this.inters[oID].line = this;
 			// console.log(this.inter.absPos);
 			//console.log(this.inters[other].absPos.toString());
 
@@ -157,15 +174,16 @@ class Line {
 	  return null;
   }
   pointOnLine(p){
-	  if(this.vector.x == 0){
-		  if(this.vector.y == 0){
+	  if(Maths.equals(this.vector.x,0)){
+		   
+		  if(Maths.equals(this.vector.y, 0)){
 			  return false;
 		  } 
 		  
 		  else{
 			var lam = (p.y-this.centre.y)/this.vector.y
 			var oX = this.centre.x+lam*this.vector.x;
-			if(Maths.round(oY,5)== Maths.round(p.x,5)){
+			if(Maths.round(oX,5)== Maths.round(p.x,5)){
 				return true;
 			}
 			else{
@@ -176,13 +194,14 @@ class Line {
 	  else{
 		  var lam = (p.x-this.centre.x)/this.vector.x
 		  var oY = this.centre.y+lam*this.vector.y;
+	
 		  if(Maths.round(oY,5)==Maths.round(p.y,5)){
 			  if(this.length == null){
 			  return true;
 			  }
 			  var dis = p.minus(this.begPoint).x/this.vector.x;
 		
-			  if(dis<=this.length&&dis>0){
+			  if(dis<=this.length&&dis>=0){
 				  return true
 			  }
 		  }

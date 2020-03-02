@@ -1,5 +1,6 @@
 class Game {
   constructor() {
+	
     this.mouseMode = "auto";
     this.road = null;
     this.collisionPairs = { frame: ["frame","road"], hitbox: ["frame"],road:["road"] };
@@ -33,8 +34,12 @@ class Game {
    this.cars.push(new Car(new Point(100 + x * 100, 0, 1), "purple", this));
     this.map = new Map(this);
     this.map.update();
+	//new Road(this,[new Point(500,0),new Point(0,0)])
     this.camera.position = this.map.camPos();
-
+	//var l = new Line(this,[new Point(-0.0,0),new Point(100,0)])
+	////var l2 = new Line(this,[new Point(0,100),new Point(0,-10)]);
+	//l.intersect(l2);
+	//new Road(this,[new Point(0,0),new Point(1000,1000)])
     for (var x = 0; x < 257; x++) {
       this.keys[x] = false;
     }
@@ -127,6 +132,7 @@ class Game {
   }
 
   update(timestamp) {
+	
     this.cur = Math.random();
   
     if (this.close > this.cur) {
@@ -140,8 +146,8 @@ class Game {
 		this.road.updateAttributes(this.camera.screenToGamePos(this.mousePos));
 	}
 	
-    if (this.camera.position.z < 0.0) {
-      this.camera.position.z = 0.0;
+    if (this.camera.position.z < 0.15) {
+      this.camera.position.z = 0.15;
     }
     this.updateDt();
     g.context.fillStyle = "#fcf2d2";

@@ -13,6 +13,14 @@ class Vector {
   add3(other) {
     return new Vector(this.x + other.x, this.y + other.y, this.z);
   }
+  parallel(other){
+	  var t = this.normalise();
+	  var o = other.normalise();
+	  if(Maths.equals(t,o)|| Maths.equals(t,o.times(-1))){
+		  return true;
+	  }
+	  return false;
+  }
   times3(n) {
     return new Vector(this.x * n, this.y * n, this.z * n);
   }

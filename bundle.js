@@ -37,7 +37,7 @@ class Camera {
       position.copy(),
       "RECT",
       [60 * scale, 35 * scale],
-      this.colour,
+      "random",
       "frame",
       true
     );
@@ -399,6 +399,15 @@ static genKeyFunctions() {
       console.clear();
     }
   };
+  keyFunctions["z"] = function(type, game) {
+    if (type == "TAPPED") {
+		 console.log(game.keys[keyToCode("ctrl")]);
+      if(game.keys["q"]){
+		 
+	  }
+    }
+  };
+  
   keyFunctions["r"] = function(type, game) {
     if (type == "TAPPED") {
       if (game.selected == null) {
@@ -427,8 +436,15 @@ static genKeyFunctions() {
 
   keyFunctions["l"] = function(type, game) {
 	  if(type == "TAPPED"){
-	   
+		  game.objects.push(game.save[0].render);
+			//for(var x = 0;x<game.objects.length;x++){
+				//if(game.objects[x].line && (game.objects[x].line.id == game.save[0].id)){
+				//	console.log("HERE");
+				//}
+			//}
+		//	game.save[0].render.render();
 	  }
+	  game.save[0].render.render();
   };
   keyFunctions["s"] = function(type, game) {
     if (type == "TAPPED") {
@@ -443,23 +459,23 @@ static genKeyFunctions() {
     }
   };
   keyFunctions["i"] = function(type, game) {
-    game.camera.move(new Vector(0, 0, 1));
+    game.camera.move(new Vector(0, 0, 3));
   };
   keyFunctions["k"] = function(type, game) {
-    game.camera.move(new Vector(0, 0, -1));
+    game.camera.move(new Vector(0, 0, -3));
   };
 
   keyFunctions["up arrow"] = function(type, game) {
-    game.camera.move(new Vector(0, 100, 0).times(game.camera.position.z));
+    game.camera.move(new Vector(0, 200, 0).times(game.camera.position.z));
   };
   keyFunctions["left arrow"] = function(type, game) {
-    game.camera.move(new Vector(-200, 0, 0).times(game.camera.position.z));
+    game.camera.move(new Vector(-400, 0, 0).times(game.camera.position.z));
   };
   keyFunctions["right arrow"] = function(type, game) {
-    game.camera.move(new Vector(200, 0, 0).times(game.camera.position.z));
+    game.camera.move(new Vector(400, 0, 0).times(game.camera.position.z));
   };
     keyFunctions["down arrow"] = function(type, game) {
-    game.camera.move(new Vector(0, -100, 0).times(game.camera.position.z));
+    game.camera.move(new Vector(0, -200, 0).times(game.camera.position.z));
   };
   return keyFunctions;
 }
@@ -519,6 +535,27 @@ for(var x = 0;x<arr.length;x++){
 	return null;
 	}
 
+function keyToCode(key){
+	for(const [k,v] of Object.entries(keyCodes)){
+		if(v ==key){
+			return k;
+		}
+	}
+}
+function randomCol(){
+	var s = "#";
+	var r;
+	for(var x = 0;x<6;x++){
+		r = parseInt(Math.random()*16);
+		if(r<=9){
+			s+=r.toString();
+		}
+		else{
+			s+= String.fromCharCode(55+r)
+		}
+	}
+	return s;
+}
 function radians(ang) {
   return (Math.PI * ang) / 180;
 }
@@ -620,7 +657,7 @@ class Line {
 			if(value&&value instanceof Object){
 			value.delete();
 			}
-			this.inters[key] =  null;
+			this.inters = {};
 }
   }
   setPoints(Points){
@@ -628,8 +665,9 @@ class Line {
 	  this.begPoint = this.Points[0];
 	  this.endPoint = this.Points[1];
 	  this.vector = Maths.normalize(this.begPoint.vectorTo(this.endPoint));
-	  this.anle = this.vector.getAngle();
+	  this.angle = this.vector.getAngle();
 	  this.centre = this.begPoint.add(this.endPoint).times(1/2);
+	  this.length = this.begPoint.distanceBetween(this.endPoint);
   }
   distanceFromPoint(p){
 	  var perp = this.vector.rotate(90).normalise();
@@ -650,6 +688,9 @@ class Line {
 	  if(this.length!=null){
 		  this.begPoint = this.centre.minus(this.vector.times(this.length/2))
 		  this.endPoint = this.centre.add(this.vector.times(this.length/2))
+		  this.length = this.begPoint.distanceBetween(this.endPoint);
+		  this.vector = this.begPoint.vectorTo(this.endPoint).normalise();
+		  this.angle = this.vector.getAngle();
 	  }
 	 
 	 // this.game.log = this.render.absPos.minus(this.square.absPos).toString();
@@ -698,9 +739,21 @@ class Line {
 		  var d =  other.centre.y;
 		  var e = other.vector.x;
 		  var f = other.vector.y;
+		  if(a == 0){
+			  if(b == 0){
+				  return null;
+				  
+			  }
+			  var mu = (x+(d-y)*a/b -c)/(e-a*f/b);
+		  }
+		  else{
 		  var mu = (y+(c-x)*b/a - d)/(f-b*e/a);
+		  }
 		  var intPoint = other.centre.add(other.vector.times(mu))
 		  intPoint.z+=1;
+		 // if(!mu){
+			 // console.log("HERE");
+		  //}
 		  if((this.pointOnLine(intPoint)&&other.pointOnLine(intPoint))){
 			  
 	  
@@ -711,6 +764,7 @@ class Line {
 			 // console.log(this.inter.absPos.toString())
 			 this.inters[oID].setAbsPos(intPoint);
 			 this.inters[oID].absPos.z+=10;
+			 this.inters[oID].line = this;
 			// console.log(this.inter.absPos);
 			//console.log(this.inters[other].absPos.toString());
 
@@ -720,15 +774,16 @@ class Line {
 	  return null;
   }
   pointOnLine(p){
-	  if(this.vector.x == 0){
-		  if(this.vector.y == 0){
+	  if(Maths.equals(this.vector.x,0)){
+		   
+		  if(Maths.equals(this.vector.y, 0)){
 			  return false;
 		  } 
 		  
 		  else{
 			var lam = (p.y-this.centre.y)/this.vector.y
 			var oX = this.centre.x+lam*this.vector.x;
-			if(Maths.round(oY,5)== Maths.round(p.x,5)){
+			if(Maths.round(oX,5)== Maths.round(p.x,5)){
 				return true;
 			}
 			else{
@@ -739,13 +794,14 @@ class Line {
 	  else{
 		  var lam = (p.x-this.centre.x)/this.vector.x
 		  var oY = this.centre.y+lam*this.vector.y;
+	
 		  if(Maths.round(oY,5)==Maths.round(p.y,5)){
 			  if(this.length == null){
 			  return true;
 			  }
 			  var dis = p.minus(this.begPoint).x/this.vector.x;
 		
-			  if(dis<=this.length&&dis>0){
+			  if(dis<=this.length&&dis>=0){
 				  return true
 			  }
 		  }
@@ -958,6 +1014,9 @@ class object {
     this.relPos = relPos.copy();
     this.absPos = this.relPos.copy();
     this.type = type;
+	if(this.colour =="random"){
+		this.colour = randomCol();
+	}
     this.size = typeof size != "undefined" ? size : [0, 0];
 	if(this.type == "CIRCLE"){
 		if(this.size.length ==1){
@@ -1098,6 +1157,9 @@ class object {
 	else{
 		this.game.context.globalAlpha = 1;
 	}
+	if(this.colour == "random"){
+		this.colour = randomCol();
+	}
 	var w = this.game.camera.centre.x;
       var h = this.game.camera.centre.y;
       var z = this.game.camera.position.z;
@@ -1111,6 +1173,7 @@ class object {
       this.game.context.rotate(-(this.angle * Math.PI) / 180);
 	  }
       this.game.context.fillStyle = this.colour;
+	
       this.game.context.strokeStyle = this.colour;
     if (this.type == "RECT") {
       
@@ -1268,12 +1331,11 @@ class object {
 
   delete() {
 	if(this.game.objects.includes(this)){
-    this.game.objects.splice(this.game.objects.indexOf(this), 1);
-	if(this.line){
-	this.line.delete();
-}
+		this.game.objects.splice(this.game.objects.indexOf(this), 1);
+		if(this.type =="LINE"){
+			this.line.delete();
+		}
 	}
-
   }
   deleteAll() {
 	 for (var x = 0; x < this.subObjects.length; x++) {
@@ -1362,9 +1424,8 @@ class object {
     this.game = game;
     this.game.roads.push(this);
     this.Points = Points;
-    this.width = 130;
-	
-	this.creating = false;
+    this.width = 90;
+	this.id = randomID();
 	if(Points.length == 1){
 	this.Points =[this.Points[0].copy(),new Point(0,0)]
 		this.creating = true;
@@ -1379,14 +1440,17 @@ class object {
 	this.angle = this.Points[0].vectorTo(this.Points[1]).getAngle();
 	var vec = new Vector(Maths.cos(this.angle),Maths.sin(this.angle));
 
-this.end = new object(this.game,this.Points[1].minus(vec.times(10)),"RECT",[20,this.width],"orange");
-    this.beg = new object(this.game,this.Points[0].add(vec.times(10)),"RECT",[20,this.width],"yellow");
-     this.beg.angle = this.angle;
+	this.end = new node(this.game,this.Points[1].minus(vec.times(10)),"end");
+	this.end.render.size = [20,this.width];
+    this.beg = new node(this.game,this.Points[0].add(vec.times(10)),"beg");
+	this.beg.render.size = [20,this.width];
+    this.beg.angle = this.angle;
 	 
-	
-     this.end.angle = this.angle;
+    this.end.angle = this.angle;
     this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
-        this.mRoad = new object(
+    
+	
+	this.mRoad = new object(
       this.game,
       this.centre,
       "RECT",
@@ -1394,10 +1458,10 @@ this.end = new object(this.game,this.Points[1].minus(vec.times(10)),"RECT",[20,t
       "black","road",true
     );
 	
-	this.mRoad.addSubObject(this.beg);
-	this.mRoad.addSubObject(this.end);
-	this.beg.setAbsPos(this.beg.relPos);
-	this.end.setAbsPos(this.end.relPos);
+	this.mRoad.addSubObject(this.beg.render);
+	this.mRoad.addSubObject(this.end.render);
+	this.end.update();
+	this.beg.update();
 this.mRoad.angle = this.angle;
 this.mRoad.transparency = 0.7;
      if(Points.length == 2){
@@ -1416,8 +1480,11 @@ this.mRoad.transparency = 0.7;
     var dy = this.Points[1].y - this.Points[0].y;
 
     this.angle = new Vector(dx,dy).getAngle();
+	
 	if(this.angle>87&&this.angle <93){
-		this.angle = 90;
+		var temp = this.angle;
+		this.angle = 90.1;
+		this.Points[1] = rotatePoint(90.1-temp,this.Points[0],this.Points[1]);
 	}
     
     this.length =
@@ -1425,29 +1492,25 @@ this.mRoad.transparency = 0.7;
       (this.Points[0].y - this.Points[1].y) ** 2;
     this.length = Math.sqrt(this.length);
 	 this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
-	 var target = this.Points[0].add(this.Points[1]).times(1/2)
     
-		this.mRoad.absPos = this.centre.copy();
+	this.mRoad.absPos = this.centre.copy();
        this.mRoad.size[0] = this.length;
        this.mRoad.angle = this.angle;
 	   this.beg.angle = this.angle;
 	  
-	   this.end.absPos = this.centre.copy();
-	   this.beg.absPos = this.centre.copy();
+		
 	   var target = new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).add(this.centre.copy())
+	   var target2= new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).times(-1).add(this.centre.copy());
 	   var begRef = this.beg;
-	   this.beg =  new object(this.game,target.minus(this.beg.absPos).times(-1),"RECT",[20,this.mRoad.size[1]]);
-	   this.beg.colour = begRef.colour; 
-	   this.beg.angle = this.angle;
-	   begRef.delete();
-	   var endRef = this.end;
-	   this.end = new object(this.game,target.minus(this.end.absPos),"RECT",[20,this.mRoad.size[1]]);
+	   this.beg.absPos =(target2);
+	   
+	   //begRef.delete();
+	  this.beg.angle = this.angle;
+	  this.beg.update();
+	   this.end.absPos = target;
 	   this.end.angle = this.angle;
-	   this.end.colour = endRef.colour;
-	   this.mRoad.addSubObject(this.beg);
-	   this.mRoad.addSubObject(this.end);
-	   endRef.delete()
-	  
+	   this.end.update();
+	 
 
   }
   setAngle(ang) {
@@ -1458,41 +1521,42 @@ this.mRoad.transparency = 0.7;
     this.game.roads.splice(this.game.roads.indexOf(this),1);
   }
   changePoint(point) {
-	this.beg.rendering=false;
-	this.end.rendering = false;
-    this.mRoad.subObjects[1].colour = "red";
     this.Points[1] = point;
     this.updateAttributes(point);
 	this.lineStuff();
 	var inters = [];
 	this.game.roads.forEach((road)=> {
-		if(road!= this){
+		if(road.id!= this.id){
 			 var lInt = this.line.intersect(road.lineL);
 			 var rInt = this.line.intersect(road.lineR);
 			 if((rInt!=null&&rInt.constructor.name =="Point")||(lInt!=null&&lInt.constructor.name =="Point")){
-				 if(rInt!=null&&lInt!=null){
-					// console.log("both");
+				 if(inters.length == 1){
+					
 				 }
 				 inters.push(road);
 			 }
-		}
+			
+			
+	}
 	}
 	);
-	this.line.clearInters();
+	//this.line.clearInters();
 	if(inters.length>1){
-		this.delete();
+		this.delete()
 		return;
 	}
 	if(inters.length == 1){
 		var otherRoad = inters[0];
 		var others = roadManager.intersect(this,otherRoad)
-	
 	}
 	
 	roadManager.createPaths(this);
 	if(inters.length ==1){
 		roadManager.interway(this,others)
 	}
+	
+	this.line.clearInters();
+	
   }
   lineStuff(){
 		var perp = Maths.normalize(this.Points[0].vectorTo(this.Points[1]).rotate(90))
@@ -1525,9 +1589,9 @@ this.mRoad.transparency = 0.7;
 
 class roadManager{
 	static intersect(road1,road2){
-		var nLine = new Line(road1.game,road1.line.centre.copy(),road1.line.vector.copy(),null);
+		var nLine = road1.line.extend()
 		var lengths = [nLine.intersect(road2.lineL),nLine.intersect(road2.lineR)]
-		 
+		nLine.clearInters();
 		nLine.delete();
 		if(lengths[0] == null){
 			var incomeR = inters[0].lineR;
@@ -1536,7 +1600,7 @@ class roadManager{
 		var incomeR = inters[0].lineL;
 		}
 		else{
-			lengths = lengths.map(x=>x.distanceBetween(road1.line.centre));
+			lengths = lengths.map(x=>x.distanceBetween(road1.line.begPoint));
 			if(lengths[0]<lengths[1]){
 				var incomeR = road2.lineL;
 			}
@@ -1546,9 +1610,11 @@ class roadManager{
 		}
 		var lE = road1.lineL.extend();
 		var rE = road1.lineR.extend();
-		var lI = lE.intersect(incomeR).copy();
+		road1.mRoad.addSubObject(lE.render);
+		road1.mRoad.addSubObject(rE.render);
+		var lI = lE.intersect(incomeR)
 		var rI = rE.intersect(incomeR)
-		lI.z+=10;
+//		lI.z+=10;
 		var lengths = [road1.lineL.begPoint.distanceBetween(lI.copy()),road1.lineR.begPoint.distanceBetween(rI.copy())]
 		var length = Math.max(lengths[0],lengths[1]);
 		//lE.clearInters();
@@ -1556,7 +1622,7 @@ class roadManager{
 		road1.updateAttributes(road1.line.begPoint.add(road1.line.vector.times(length)));
 
 		
-		var endRoad = road2.end.absPos.copy();
+		var endRoad = road2.end.render.absPos.copy();
 		endRoad =[lE.distanceFromPoint(endRoad),rE.distanceFromPoint(endRoad)];
 		if(endRoad[0] < endRoad[1]){
 			var endLine =lE;
@@ -1635,38 +1701,98 @@ class roadManager{
 		road.rightPath.addSubObject(road.rightL.render);
 	}
 	static interway(road,others){
+	
 		var begRoad = others[0]
 		var endRoad = others[1]
 		var lE = begRoad.lineL.extend();
-		var rE = endRoad.lineR.extend();
-		if(lE.intersect(road.line)==null){
-			var incomeR = rE
+		var rE = begRoad.lineR.extend();
+		if(lE.intersect(road.line) ==null){
+			var incomeR = rE;
 		}
 		else{
-			var incomeR = lE
+			var incomeR = lE;
 		}
-		lE.render.rendering = false;
-		rE.render.rendering = false;
+		lE.clearInters();
+		incomeR.render.colour = "green";
 		
 		road.leftL.intersect(incomeR);
 		road.rightL.intersect(incomeR);
-		if(begRoad.line.intersect(road.leftL)==null){
-			var incomeB = road.lineR.extend();
-			var incomeE = road.lineL.extend();
+		
+		var i = begRoad
+		lE.delete();
+		rE.delete();
+		lE = road.lineL.extend();
+		rE = road.lineR.extend();
+		if(begRoad.line.intersect(lE) == null){
+			var incomeE = lE;
+			var incomeB = rE;
 		}
 		else{
-			var incomeB = road.lineL.extend();
-			var incomeE = road.lineR.extend();
+			var incomeE =  rE;
+			var incomeB = lE
 		}
+		begRoad.line.clearInters();
 		
-		incomeB.render.colour = "red";
-		var c = begRoad.leftL.intersect(incomeB);
-		begRoad.rightL.intersect(incomeB);
+		
+		this.b = new sNode(road.game,begRoad.leftL.intersect(incomeB),"beg",begRoad.leftL);
+		this.b2 = new sNode(road.game,begRoad.rightL.intersect(incomeB),"end",begRoad.rightL);
+		
+		begRoad.leftL.clearInters();
+		begRoad.rightL.clearInters();
 		endRoad.leftL.intersect(incomeE);
 		endRoad.rightL.intersect(incomeE);
 		
+	    
+		lE.delete();
+		rE.delete();
 	}
+}
 
+class node{
+	constructor(game,pos,type,line){
+		this.game = game;
+		this.line = line;
+		this.absPos = pos.copy();
+		this.angle = 0;
+		this.type = type;
+		this.colour = (this.type =="beg")?"yellow":"orange";
+		this.render = new object(this.game,this.absPos,"RECT",[0,0],this.colour);
+	}
+	update(){
+		this.render.setAbsPos(this.absPos);
+		this.render.angle = this.angle;
+	}
+}
+class sNode{
+	constructor(game,pos,type){
+		this.game = game;
+		this.absPos = pos.copy();
+		this.angle = 0;
+		this.type = type;
+		this.render = new object(this.game,this.absPos,"CIRCLE",[7],"purple");
+	}
+}
+
+class intersection{
+	constructor(roads){
+		this.ax1 = [roads[0]]
+		this.ax2 = [];
+		for(var x = 1;x<roads.length;x++){
+			if(roads[x].line.vector.parallel(roads[0].line.vector)){	
+				this.ax1.push(roads[x]);
+			}
+			else{
+				this.ax2.push(roads[x]);
+			}
+		}
+		/*for(var x = 0;x<this.ax1.length;x++){
+			this.ax1[x].leftL.render.colour = "red";
+		}
+		for(var x = 0;x<this.ax2.length;x++){
+			this.ax2[x].leftL.render.colour = "pink";
+		}
+		this.roads = this.ax1.concat(this.ax2);*/
+	}
 }
 
 class Vector {
@@ -1683,6 +1809,14 @@ class Vector {
   }
   add3(other) {
     return new Vector(this.x + other.x, this.y + other.y, this.z);
+  }
+  parallel(other){
+	  var t = this.normalise();
+	  var o = other.normalise();
+	  if(Maths.equals(t,o)|| Maths.equals(t,o.times(-1))){
+		  return true;
+	  }
+	  return false;
   }
   times3(n) {
     return new Vector(this.x * n, this.y * n, this.z * n);
@@ -1748,6 +1882,7 @@ class Vector {
 
 class Game {
   constructor() {
+	
     this.mouseMode = "auto";
     this.road = null;
     this.collisionPairs = { frame: ["frame","road"], hitbox: ["frame"],road:["road"] };
@@ -1781,8 +1916,12 @@ class Game {
    this.cars.push(new Car(new Point(100 + x * 100, 0, 1), "purple", this));
     this.map = new Map(this);
     this.map.update();
+	//new Road(this,[new Point(500,0),new Point(0,0)])
     this.camera.position = this.map.camPos();
-
+	//var l = new Line(this,[new Point(-0.0,0),new Point(100,0)])
+	////var l2 = new Line(this,[new Point(0,100),new Point(0,-10)]);
+	//l.intersect(l2);
+	//new Road(this,[new Point(0,0),new Point(1000,1000)])
     for (var x = 0; x < 257; x++) {
       this.keys[x] = false;
     }
@@ -1875,6 +2014,7 @@ class Game {
   }
 
   update(timestamp) {
+	
     this.cur = Math.random();
   
     if (this.close > this.cur) {
@@ -1888,8 +2028,8 @@ class Game {
 		this.road.updateAttributes(this.camera.screenToGamePos(this.mousePos));
 	}
 	
-    if (this.camera.position.z < 0.0) {
-      this.camera.position.z = 0.0;
+    if (this.camera.position.z < 0.15) {
+      this.camera.position.z = 0.15;
     }
     this.updateDt();
     g.context.fillStyle = "#fcf2d2";

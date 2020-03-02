@@ -3,9 +3,8 @@
     this.game = game;
     this.game.roads.push(this);
     this.Points = Points;
-    this.width = 130;
-	
-	this.creating = false;
+    this.width = 90;
+	this.id = randomID();
 	if(Points.length == 1){
 	this.Points =[this.Points[0].copy(),new Point(0,0)]
 		this.creating = true;
@@ -20,14 +19,17 @@
 	this.angle = this.Points[0].vectorTo(this.Points[1]).getAngle();
 	var vec = new Vector(Maths.cos(this.angle),Maths.sin(this.angle));
 
-this.end = new object(this.game,this.Points[1].minus(vec.times(10)),"RECT",[20,this.width],"orange");
-    this.beg = new object(this.game,this.Points[0].add(vec.times(10)),"RECT",[20,this.width],"yellow");
-     this.beg.angle = this.angle;
+	this.end = new node(this.game,this.Points[1].minus(vec.times(10)),"end");
+	this.end.render.size = [20,this.width];
+    this.beg = new node(this.game,this.Points[0].add(vec.times(10)),"beg");
+	this.beg.render.size = [20,this.width];
+    this.beg.angle = this.angle;
 	 
-	
-     this.end.angle = this.angle;
+    this.end.angle = this.angle;
     this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
-        this.mRoad = new object(
+    
+	
+	this.mRoad = new object(
       this.game,
       this.centre,
       "RECT",
@@ -35,10 +37,10 @@ this.end = new object(this.game,this.Points[1].minus(vec.times(10)),"RECT",[20,t
       "black","road",true
     );
 	
-	this.mRoad.addSubObject(this.beg);
-	this.mRoad.addSubObject(this.end);
-	this.beg.setAbsPos(this.beg.relPos);
-	this.end.setAbsPos(this.end.relPos);
+	this.mRoad.addSubObject(this.beg.render);
+	this.mRoad.addSubObject(this.end.render);
+	this.end.update();
+	this.beg.update();
 this.mRoad.angle = this.angle;
 this.mRoad.transparency = 0.7;
      if(Points.length == 2){
@@ -57,8 +59,11 @@ this.mRoad.transparency = 0.7;
     var dy = this.Points[1].y - this.Points[0].y;
 
     this.angle = new Vector(dx,dy).getAngle();
+	
 	if(this.angle>87&&this.angle <93){
-		this.angle = 90;
+		var temp = this.angle;
+		this.angle = 90.1;
+		this.Points[1] = rotatePoint(90.1-temp,this.Points[0],this.Points[1]);
 	}
     
     this.length =
@@ -66,29 +71,25 @@ this.mRoad.transparency = 0.7;
       (this.Points[0].y - this.Points[1].y) ** 2;
     this.length = Math.sqrt(this.length);
 	 this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
-	 var target = this.Points[0].add(this.Points[1]).times(1/2)
     
-		this.mRoad.absPos = this.centre.copy();
+	this.mRoad.absPos = this.centre.copy();
        this.mRoad.size[0] = this.length;
        this.mRoad.angle = this.angle;
 	   this.beg.angle = this.angle;
 	  
-	   this.end.absPos = this.centre.copy();
-	   this.beg.absPos = this.centre.copy();
+		
 	   var target = new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).add(this.centre.copy())
+	   var target2= new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).times(-1).add(this.centre.copy());
 	   var begRef = this.beg;
-	   this.beg =  new object(this.game,target.minus(this.beg.absPos).times(-1),"RECT",[20,this.mRoad.size[1]]);
-	   this.beg.colour = begRef.colour; 
-	   this.beg.angle = this.angle;
-	   begRef.delete();
-	   var endRef = this.end;
-	   this.end = new object(this.game,target.minus(this.end.absPos),"RECT",[20,this.mRoad.size[1]]);
+	   this.beg.absPos =(target2);
+	   
+	   //begRef.delete();
+	  this.beg.angle = this.angle;
+	  this.beg.update();
+	   this.end.absPos = target;
 	   this.end.angle = this.angle;
-	   this.end.colour = endRef.colour;
-	   this.mRoad.addSubObject(this.beg);
-	   this.mRoad.addSubObject(this.end);
-	   endRef.delete()
-	  
+	   this.end.update();
+	 
 
   }
   setAngle(ang) {
@@ -99,41 +100,42 @@ this.mRoad.transparency = 0.7;
     this.game.roads.splice(this.game.roads.indexOf(this),1);
   }
   changePoint(point) {
-	this.beg.rendering=false;
-	this.end.rendering = false;
-    this.mRoad.subObjects[1].colour = "red";
     this.Points[1] = point;
     this.updateAttributes(point);
 	this.lineStuff();
 	var inters = [];
 	this.game.roads.forEach((road)=> {
-		if(road!= this){
+		if(road.id!= this.id){
 			 var lInt = this.line.intersect(road.lineL);
 			 var rInt = this.line.intersect(road.lineR);
 			 if((rInt!=null&&rInt.constructor.name =="Point")||(lInt!=null&&lInt.constructor.name =="Point")){
-				 if(rInt!=null&&lInt!=null){
-					// console.log("both");
+				 if(inters.length == 1){
+					
 				 }
 				 inters.push(road);
 			 }
-		}
+			
+			
+	}
 	}
 	);
-	this.line.clearInters();
+	//this.line.clearInters();
 	if(inters.length>1){
-		this.delete();
+		this.delete()
 		return;
 	}
 	if(inters.length == 1){
 		var otherRoad = inters[0];
 		var others = roadManager.intersect(this,otherRoad)
-	
 	}
 	
 	roadManager.createPaths(this);
 	if(inters.length ==1){
 		roadManager.interway(this,others)
 	}
+	
+	this.line.clearInters();
+	
   }
   lineStuff(){
 		var perp = Maths.normalize(this.Points[0].vectorTo(this.Points[1]).rotate(90))

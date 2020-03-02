@@ -6,6 +6,9 @@ class object {
     this.relPos = relPos.copy();
     this.absPos = this.relPos.copy();
     this.type = type;
+	if(this.colour =="random"){
+		this.colour = randomCol();
+	}
     this.size = typeof size != "undefined" ? size : [0, 0];
 	if(this.type == "CIRCLE"){
 		if(this.size.length ==1){
@@ -146,6 +149,9 @@ class object {
 	else{
 		this.game.context.globalAlpha = 1;
 	}
+	if(this.colour == "random"){
+		this.colour = randomCol();
+	}
 	var w = this.game.camera.centre.x;
       var h = this.game.camera.centre.y;
       var z = this.game.camera.position.z;
@@ -159,6 +165,7 @@ class object {
       this.game.context.rotate(-(this.angle * Math.PI) / 180);
 	  }
       this.game.context.fillStyle = this.colour;
+	
       this.game.context.strokeStyle = this.colour;
     if (this.type == "RECT") {
       
@@ -316,12 +323,11 @@ class object {
 
   delete() {
 	if(this.game.objects.includes(this)){
-    this.game.objects.splice(this.game.objects.indexOf(this), 1);
-	if(this.line){
-	this.line.delete();
-}
+		this.game.objects.splice(this.game.objects.indexOf(this), 1);
+		if(this.type =="LINE"){
+			this.line.delete();
+		}
 	}
-
   }
   deleteAll() {
 	 for (var x = 0; x < this.subObjects.length; x++) {

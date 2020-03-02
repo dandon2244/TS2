@@ -22,6 +22,27 @@ for(var x = 0;x<arr.length;x++){
 	return null;
 	}
 
+function keyToCode(key){
+	for(const [k,v] of Object.entries(keyCodes)){
+		if(v ==key){
+			return k;
+		}
+	}
+}
+function randomCol(){
+	var s = "#";
+	var r;
+	for(var x = 0;x<6;x++){
+		r = parseInt(Math.random()*16);
+		if(r<=9){
+			s+=r.toString();
+		}
+		else{
+			s+= String.fromCharCode(55+r)
+		}
+	}
+	return s;
+}
 function radians(ang) {
   return (Math.PI * ang) / 180;
 }

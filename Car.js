@@ -13,7 +13,7 @@
       position.copy(),
       "RECT",
       [60 * scale, 35 * scale],
-      this.colour,
+      "random",
       "frame",
       true
     );

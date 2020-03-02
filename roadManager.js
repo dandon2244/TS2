@@ -1,8 +1,8 @@
 class roadManager{
 	static intersect(road1,road2){
-		var nLine = new Line(road1.game,road1.line.centre.copy(),road1.line.vector.copy(),null);
+		var nLine = road1.line.extend()
 		var lengths = [nLine.intersect(road2.lineL),nLine.intersect(road2.lineR)]
-		 
+		nLine.clearInters();
 		nLine.delete();
 		if(lengths[0] == null){
 			var incomeR = inters[0].lineR;
@@ -11,7 +11,7 @@ class roadManager{
 		var incomeR = inters[0].lineL;
 		}
 		else{
-			lengths = lengths.map(x=>x.distanceBetween(road1.line.centre));
+			lengths = lengths.map(x=>x.distanceBetween(road1.line.begPoint));
 			if(lengths[0]<lengths[1]){
 				var incomeR = road2.lineL;
 			}
@@ -21,9 +21,11 @@ class roadManager{
 		}
 		var lE = road1.lineL.extend();
 		var rE = road1.lineR.extend();
-		var lI = lE.intersect(incomeR).copy();
+		road1.mRoad.addSubObject(lE.render);
+		road1.mRoad.addSubObject(rE.render);
+		var lI = lE.intersect(incomeR)
 		var rI = rE.intersect(incomeR)
-		lI.z+=10;
+//		lI.z+=10;
 		var lengths = [road1.lineL.begPoint.distanceBetween(lI.copy()),road1.lineR.begPoint.distanceBetween(rI.copy())]
 		var length = Math.max(lengths[0],lengths[1]);
 		//lE.clearInters();
@@ -31,7 +33,7 @@ class roadManager{
 		road1.updateAttributes(road1.line.begPoint.add(road1.line.vector.times(length)));
 
 		
-		var endRoad = road2.end.absPos.copy();
+		var endRoad = road2.end.render.absPos.copy();
 		endRoad =[lE.distanceFromPoint(endRoad),rE.distanceFromPoint(endRoad)];
 		if(endRoad[0] < endRoad[1]){
 			var endLine =lE;
@@ -110,36 +112,96 @@ class roadManager{
 		road.rightPath.addSubObject(road.rightL.render);
 	}
 	static interway(road,others){
+	
 		var begRoad = others[0]
 		var endRoad = others[1]
 		var lE = begRoad.lineL.extend();
-		var rE = endRoad.lineR.extend();
-		if(lE.intersect(road.line)==null){
-			var incomeR = rE
+		var rE = begRoad.lineR.extend();
+		if(lE.intersect(road.line) ==null){
+			var incomeR = rE;
 		}
 		else{
-			var incomeR = lE
+			var incomeR = lE;
 		}
-		lE.render.rendering = false;
-		rE.render.rendering = false;
+		lE.clearInters();
+		incomeR.render.colour = "green";
 		
 		road.leftL.intersect(incomeR);
 		road.rightL.intersect(incomeR);
-		if(begRoad.line.intersect(road.leftL)==null){
-			var incomeB = road.lineR.extend();
-			var incomeE = road.lineL.extend();
+		
+		var i = begRoad
+		lE.delete();
+		rE.delete();
+		lE = road.lineL.extend();
+		rE = road.lineR.extend();
+		if(begRoad.line.intersect(lE) == null){
+			var incomeE = lE;
+			var incomeB = rE;
 		}
 		else{
-			var incomeB = road.lineL.extend();
-			var incomeE = road.lineR.extend();
+			var incomeE =  rE;
+			var incomeB = lE
 		}
+		begRoad.line.clearInters();
 		
-		incomeB.render.colour = "red";
-		var c = begRoad.leftL.intersect(incomeB);
-		begRoad.rightL.intersect(incomeB);
+		
+		begRoad.b = new sNode(road.game,begRoad.leftL.intersect(incomeB),"beg",begRoad.leftL);
+		this.b2 = new sNode(road.game,begRoad.rightL.intersect(incomeB),"end",begRoad.rightL);
+		
+		begRoad.leftL.clearInters();
+		begRoad.rightL.clearInters();
 		endRoad.leftL.intersect(incomeE);
 		endRoad.rightL.intersect(incomeE);
 		
+	    
+		lE.delete();
+		rE.delete();
 	}
+}
 
+class node{
+	constructor(game,pos,type,line){
+		this.game = game;
+		this.line = line;
+		this.absPos = pos.copy();
+		this.angle = 0;
+		this.type = type;
+		this.colour = (this.type =="beg")?"yellow":"orange";
+		this.render = new object(this.game,this.absPos,"RECT",[0,0],this.colour);
+	}
+	update(){
+		this.render.setAbsPos(this.absPos);
+		this.render.angle = this.angle;
+	}
+}
+class sNode{
+	constructor(game,pos,type){
+		this.game = game;
+		this.absPos = pos.copy();
+		this.angle = 0;
+		this.type = type;
+		this.render = new object(this.game,this.absPos,"CIRCLE",[7],"purple");
+	}
+}
+
+class intersection{
+	constructor(roads){
+		this.ax1 = [roads[0]]
+		this.ax2 = [];
+		for(var x = 1;x<roads.length;x++){
+			if(roads[x].line.vector.parallel(roads[0].line.vector)){	
+				this.ax1.push(roads[x]);
+			}
+			else{
+				this.ax2.push(roads[x]);
+			}
+		}
+		/*for(var x = 0;x<this.ax1.length;x++){
+			this.ax1[x].leftL.render.colour = "red";
+		}
+		for(var x = 0;x<this.ax2.length;x++){
+			this.ax2[x].leftL.render.colour = "pink";
+		}
+		this.roads = this.ax1.concat(this.ax2);*/
+	}
 }

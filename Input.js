@@ -13,6 +13,15 @@ static genKeyFunctions() {
       console.clear();
     }
   };
+  keyFunctions["z"] = function(type, game) {
+    if (type == "TAPPED") {
+		 console.log(game.keys[keyToCode("ctrl")]);
+      if(game.keys["q"]){
+		 
+	  }
+    }
+  };
+  
   keyFunctions["r"] = function(type, game) {
     if (type == "TAPPED") {
       if (game.selected == null) {
@@ -41,8 +50,15 @@ static genKeyFunctions() {
 
   keyFunctions["l"] = function(type, game) {
 	  if(type == "TAPPED"){
-	   
+		  game.objects.push(game.save[0].render);
+			//for(var x = 0;x<game.objects.length;x++){
+				//if(game.objects[x].line && (game.objects[x].line.id == game.save[0].id)){
+				//	console.log("HERE");
+				//}
+			//}
+		//	game.save[0].render.render();
 	  }
+	  game.save[0].render.render();
   };
   keyFunctions["s"] = function(type, game) {
     if (type == "TAPPED") {
@@ -57,23 +73,23 @@ static genKeyFunctions() {
     }
   };
   keyFunctions["i"] = function(type, game) {
-    game.camera.move(new Vector(0, 0, 1));
+    game.camera.move(new Vector(0, 0, 3));
   };
   keyFunctions["k"] = function(type, game) {
-    game.camera.move(new Vector(0, 0, -1));
+    game.camera.move(new Vector(0, 0, -3));
   };
 
   keyFunctions["up arrow"] = function(type, game) {
-    game.camera.move(new Vector(0, 100, 0).times(game.camera.position.z));
+    game.camera.move(new Vector(0, 200, 0).times(game.camera.position.z));
   };
   keyFunctions["left arrow"] = function(type, game) {
-    game.camera.move(new Vector(-200, 0, 0).times(game.camera.position.z));
+    game.camera.move(new Vector(-400, 0, 0).times(game.camera.position.z));
   };
   keyFunctions["right arrow"] = function(type, game) {
-    game.camera.move(new Vector(200, 0, 0).times(game.camera.position.z));
+    game.camera.move(new Vector(400, 0, 0).times(game.camera.position.z));
   };
     keyFunctions["down arrow"] = function(type, game) {
-    game.camera.move(new Vector(0, -100, 0).times(game.camera.position.z));
+    game.camera.move(new Vector(0, -200, 0).times(game.camera.position.z));
   };
   return keyFunctions;
 }
