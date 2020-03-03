@@ -11,7 +11,6 @@
 	}
 	else{
  	this.Points = [this.Points[0].copy(),this.Points[1].copy()]
-	
 }
 
 
@@ -43,10 +42,19 @@
 	this.beg.update();
 this.mRoad.angle = this.angle;
 this.mRoad.transparency = 0.7;
+this.lineStuff();
      if(Points.length == 2){
-		 this.lineStuff();
 		 roadManager.createPaths(this);
 	 }
+	 
+	 this.lB = new sNode(this.game,new Point(10,10),"beg",this.line);
+	// this.lE = new sNode(this.game,new Point(0,0),"end",this.line);
+	 var perp = this.line.vector.rotate(90).normalise();
+	 this.lB.absPos = this.Points[0].add(this.line.vector.normalise().times(10));
+	 //this.lB.absPos.move(perp.times(10));
+	 this.lB.render.absPos.z+=10;
+	 this.lB.update();
+	 console.log(this.lB.render.absPos.toString());
 	
   }
 
@@ -89,6 +97,15 @@ this.mRoad.transparency = 0.7;
 	   this.end.absPos = target;
 	   this.end.angle = this.angle;
 	   this.end.update();
+	   this.lineStuff();
+	   var perp = this.line.vector.rotate(90).normalise();
+		this.lB.absPos = this.Points[0].add(this.line.vector.times(10));
+		//console.log(this.lB.render.absPos);
+	 //this.lB.absPos.move(perp.times(10));
+		//this.lB.render.absPos.z+=10;
+		this.lB.update();
+		// console.log(this.lB.render.absPos.toString());
+		// console.log(this.line);
 	 
 
   }

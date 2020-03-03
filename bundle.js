@@ -1432,7 +1432,6 @@ class object {
 	}
 	else{
  	this.Points = [this.Points[0].copy(),this.Points[1].copy()]
-	
 }
 
 
@@ -1464,10 +1463,19 @@ class object {
 	this.beg.update();
 this.mRoad.angle = this.angle;
 this.mRoad.transparency = 0.7;
+this.lineStuff();
      if(Points.length == 2){
-		 this.lineStuff();
 		 roadManager.createPaths(this);
 	 }
+	 
+	 this.lB = new sNode(this.game,new Point(10,10),"beg",this.line);
+	// this.lE = new sNode(this.game,new Point(0,0),"end",this.line);
+	 var perp = this.line.vector.rotate(90).normalise();
+	 this.lB.absPos = this.Points[0].add(this.line.vector.normalise().times(10));
+	 //this.lB.absPos.move(perp.times(10));
+	 this.lB.render.absPos.z+=10;
+	 this.lB.update();
+	 console.log(this.lB.render.absPos.toString());
 	
   }
 
@@ -1510,6 +1518,15 @@ this.mRoad.transparency = 0.7;
 	   this.end.absPos = target;
 	   this.end.angle = this.angle;
 	   this.end.update();
+	   this.lineStuff();
+	   var perp = this.line.vector.rotate(90).normalise();
+		this.lB.absPos = this.Points[0].add(this.line.vector.times(10));
+		//console.log(this.lB.render.absPos);
+	 //this.lB.absPos.move(perp.times(10));
+		//this.lB.render.absPos.z+=10;
+		this.lB.update();
+		// console.log(this.lB.render.absPos.toString());
+		// console.log(this.line);
 	 
 
   }
@@ -1734,9 +1751,10 @@ class roadManager{
 		begRoad.line.clearInters();
 		
 		
-		this.b = new sNode(road.game,begRoad.leftL.intersect(incomeB),"beg",begRoad.leftL);
-		this.b2 = new sNode(road.game,begRoad.rightL.intersect(incomeB),"end",begRoad.rightL);
-		
+		/**begRoad.b = new sNode(road.game,begRoad.leftL.intersect(incomeB),"beg",begRoad.leftL);
+		begRoad.b2 = new sNode(road.game,begRoad.rightL.intersect(incomeB),"end",begRoad.rightL);
+		begRoad.b2.render.colour = "grey";
+		**/
 		begRoad.leftL.clearInters();
 		begRoad.rightL.clearInters();
 		endRoad.leftL.intersect(incomeE);
@@ -1764,12 +1782,30 @@ class node{
 	}
 }
 class sNode{
-	constructor(game,pos,type){
+	constructor(game,pos,type,line){
 		this.game = game;
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
 		this.render = new object(this.game,this.absPos,"CIRCLE",[7],"purple");
+		this.line = line;
+		this.line.render.addSubObject(this.render);
+		//this.render.setAbsPos(this.absPos);
+	}
+	update(line){
+		if(line){
+			if(this.line){
+				this.line.delete()
+			}
+			this.line = line;
+			this.line.render.addSubObject(this.render);
+		}
+		console.log(this.render.absPos.toString(),"FFF")
+		this.render.setAbsPos(this.absPos);
+		console.log(this.render.absPos.toString(),"AAAAAA")
+		console.log();
+		console.log();
+		//console.log();
 	}
 }
 
