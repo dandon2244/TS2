@@ -67,6 +67,13 @@ class roadManager{
 		lengths[1] = lengths[1].distanceBetween(road2.lineR.begPoint);
 		lengths = Math.max(lengths[0],lengths[1]);
 		var begRoad = new Road(road1.game,[otherP,otherP.add(otherV.times(lengths))]);
+		console.log(road2.lB.absPos.toString());
+		begRoad.lB.delete();
+		begRoad.lB = road2.lB;
+		begRoad.lB.update(begRoad.lineL);
+		road2.lB = null;
+		console.log(begRoad.lB.absPos.toString());
+		begRoad.lB.render.setAbsPos(begRoad.lB.absPos);
 		
 		road1.mRoad.addSubObject(lE.render);
 		road1.mRoad.addSubObject(rE.render)
@@ -169,6 +176,9 @@ class node{
 		this.render.setAbsPos(this.absPos);
 		this.render.angle = this.angle;
 	}
+	delete(){
+		this.render.delete();
+	}
 }
 class sNode{
 	constructor(game,pos,type,line){
@@ -179,7 +189,7 @@ class sNode{
 		this.render = new object(this.game,this.absPos,"CIRCLE",[7],"purple");
 		this.line = line;
 		this.line.render.addSubObject(this.render);
-		//this.render.setAbsPos(this.absPos);
+		this.render.setAbsPos(this.absPos);
 	}
 	update(line){
 		if(line){
@@ -187,17 +197,13 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
+			this.render = new object(this.game,this.absPos,"CIRCLE",[7],"purple");
 			this.line.render.addSubObject(this.render);
 		}
-		//console.log(this.render.absPos.toString(),"FFF")
 		this.render.setAbsPos(this.absPos);
-		if(!this.render.absPos.x){
-			console.log(this.absPos.toString(),"abs.",this.render.absPos.toString(),"rend")
-		}
-		//console.log(this.render.absPos.toString(),"AAAAAA")
-		//console.log(" ");
-		//console.log(" ");
-		//console.log();
+	}
+	delete(){
+		this.render.delete();
 	}
 }
 
