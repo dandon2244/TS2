@@ -589,9 +589,9 @@ var randomID = function(){
 			c = String.fromCharCode(65+c)
 		}
 		else{
-			c = c -26;
+			c-=26;
 		}
-		s+=c;
+		s+=String(c);
 	}
 	return s;
 }
@@ -601,6 +601,7 @@ var getAxes = function(rect) {
 var removeFromArray = function(obj,arr){
 	arr.splice(arr.indexOf(obj),1);
 }
+
 var projectOntoLine = function(p,line){
 	var perp = line.vector.rotate(90).normalise();
 	var pLine = new Line(line.game,p.copy(),perp,null);
@@ -1491,7 +1492,7 @@ this.lineStuff();
 	 this.lB = new sNode(this.game,new Point(10,10),"beg",this.lineL);
 	 var perp = this.line.vector.rotate(90).normalise();
 	 this.lB.absPos = this.Points[0].add(this.line.vector.normalise().times(10));
-	
+	 this.lB.absPos.move(perp.times(this.width/4));
 	 this.lB.render.absPos.z+=10;
 	 this.lB.update();
 	
@@ -1541,9 +1542,7 @@ this.lineStuff();
 	   var perp = this.line.vector.rotate(90).normalise();
 		this.lB.absPos = this.Points[0].add(this.line.vector.times(10));
 		var  l = this.Points[0].add(this.line.vector.times(10));
-		if(isNaN(l.x)){
-			console.log(Maths.equals(this.line.endPoint,this.line.begPoint));
-		}
+
 		
 		//console.log(this.lB.render.absPos);
 		this.lB.absPos.move(perp.times(this.width/4));
@@ -1655,11 +1654,10 @@ class roadManager{
 		road1.mRoad.addSubObject(rE.render);
 		var lI = lE.intersect(incomeR)
 		var rI = rE.intersect(incomeR)
-//		lI.z+=10;
+
 		var lengths = [road1.lineL.begPoint.distanceBetween(lI.copy()),road1.lineR.begPoint.distanceBetween(rI.copy())]
 		var length = Math.max(lengths[0],lengths[1]);
-		//lE.clearInters();
-		//rE.clearInters();
+
 		road1.updateAttributes(road1.line.begPoint.add(road1.line.vector.times(length)));
 
 		
@@ -1697,13 +1695,15 @@ class roadManager{
 		lengths[1] = lengths[1].distanceBetween(road2.lineR.begPoint);
 		lengths = Math.max(lengths[0],lengths[1]);
 		var begRoad = new Road(road1.game,[otherP,otherP.add(otherV.times(lengths))]);
-		console.log(road2.lB.absPos.toString());
+		console.log(road2.lB.id);
 		begRoad.lB.delete();
-		begRoad.lB = road2.lB;
-		begRoad.lB.update(begRoad.lineL);
-		road2.lB = null;
+		//begRoad.lB = road2.lB;
+		//begRoad.lB.update(begRoad.lineL);
+		//road2.lB = null;
+		road2.lB.update(begRoad.lineL);
+		road2.delete();
 		console.log(begRoad.lB.absPos.toString());
-		begRoad.lB.render.setAbsPos(begRoad.lB.absPos);
+		//begRoad.lB.render.setAbsPos(begRoad.lB.absPos);
 		
 		road1.mRoad.addSubObject(lE.render);
 		road1.mRoad.addSubObject(rE.render)
@@ -1718,7 +1718,7 @@ class roadManager{
 		
 		//rE.delete();
 		road1.lineStuff();
-		road2.delete();
+	//	road2.delete();
 		lE.delete();
 		rE.delete();
 		return [begRoad,endRoad]
@@ -1778,8 +1778,6 @@ class roadManager{
 		}
 		begRoad.line.clearInters();
 		
-		begRoad.lB.absPos = begRoad.Points[0]
-		begRoad.lB.update();
 		begRoad.leftL.clearInters();
 		begRoad.rightL.clearInters();
 		endRoad.leftL.intersect(incomeE);
@@ -1820,6 +1818,10 @@ class sNode{
 		this.line = line;
 		this.line.render.addSubObject(this.render);
 		this.render.setAbsPos(this.absPos);
+		this.id = randomID();
+	}
+	copy(){
+		return new sNode(this.game,this.absPos,this.line)
 	}
 	update(line){
 		if(line){

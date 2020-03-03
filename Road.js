@@ -50,7 +50,7 @@ this.lineStuff();
 	 this.lB = new sNode(this.game,new Point(10,10),"beg",this.lineL);
 	 var perp = this.line.vector.rotate(90).normalise();
 	 this.lB.absPos = this.Points[0].add(this.line.vector.normalise().times(10));
-	 thus.lB.absPos.move(perp.times(this.width));
+	 this.lB.absPos.move(perp.times(this.width/4));
 	 this.lB.render.absPos.z+=10;
 	 this.lB.update();
 	

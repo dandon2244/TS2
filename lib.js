@@ -76,9 +76,9 @@ var randomID = function(){
 			c = String.fromCharCode(65+c)
 		}
 		else{
-			c = c -26;
+			c-=26;
 		}
-		s+=c;
+		s+=String(c);
 	}
 	return s;
 }
@@ -88,6 +88,7 @@ var getAxes = function(rect) {
 var removeFromArray = function(obj,arr){
 	arr.splice(arr.indexOf(obj),1);
 }
+
 var projectOntoLine = function(p,line){
 	var perp = line.vector.rotate(90).normalise();
 	var pLine = new Line(line.game,p.copy(),perp,null);
