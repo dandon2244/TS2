@@ -7,6 +7,9 @@ static  sin(angle) {
   return Math.sin((angle * Math.PI) / 180);
 }
 static  normalize(vec) {
+	if(Maths.equals(vec,new Vector(0,0))){
+		return vec.copy();
+	}
   var mag = vec.x * vec.x + vec.y * vec.y;
   mag = Math.sqrt(mag);
   return vec.times(1 / mag);

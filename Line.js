@@ -13,6 +13,11 @@ class Line {
 	   this.length = this.vector.mag();
 	   this.vector = Maths.normalize(this.vector)
 	   this.angle = this.vector.getAngle();
+	   if(Maths.equals(this.endPoint,this.begPoint)){
+		   this.length = 0;
+		   this.vector = new Vector(0,0);
+		   this.angl = 0;
+	   }
    }
    else{
 		this.length = length;

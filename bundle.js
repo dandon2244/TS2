@@ -581,7 +581,19 @@ var isColliding = function(rect1, rect2) {
   return true;
 }
 var randomID = function(){
-	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+	var c;
+	var s = "";
+	for(var x = 0; x<20;x++){
+		c = parseInt(Math.random()*36);
+		if(c<26){
+			c = String.fromCharCode(65+c)
+		}
+		else{
+			c = c -26;
+		}
+		s+=c;
+	}
+	return s;
 }
 var getAxes = function(rect) {
   return [new Point(Maths.cos(rect.angle), Maths.sin(rect.angle)),new Point(Maths.cos(rect.angle + 90), Maths.sin(rect.angle + 90))];
@@ -613,6 +625,11 @@ class Line {
 	   this.length = this.vector.mag();
 	   this.vector = Maths.normalize(this.vector)
 	   this.angle = this.vector.getAngle();
+	   if(Maths.equals(this.endPoint,this.begPoint)){
+		   this.length = 0;
+		   this.vector = new Vector(0,0);
+		   this.angl = 0;
+	   }
    }
    else{
 		this.length = length;
@@ -975,6 +992,9 @@ static  sin(angle) {
   return Math.sin((angle * Math.PI) / 180);
 }
 static  normalize(vec) {
+	if(Maths.equals(vec,new Vector(0,0))){
+		return vec.copy();
+	}
   var mag = vec.x * vec.x + vec.y * vec.y;
   mag = Math.sqrt(mag);
   return vec.times(1 / mag);
@@ -1468,14 +1488,13 @@ this.lineStuff();
 		 roadManager.createPaths(this);
 	 }
 	 
-	 this.lB = new sNode(this.game,new Point(10,10),"beg",this.line);
-	// this.lE = new sNode(this.game,new Point(0,0),"end",this.line);
+	 this.lB = new sNode(this.game,new Point(10,10),"beg",this.lineL);
 	 var perp = this.line.vector.rotate(90).normalise();
 	 this.lB.absPos = this.Points[0].add(this.line.vector.normalise().times(10));
-	 //this.lB.absPos.move(perp.times(10));
+	
 	 this.lB.render.absPos.z+=10;
 	 this.lB.update();
-	 console.log(this.lB.render.absPos.toString());
+	
 	
   }
 
@@ -1521,8 +1540,13 @@ this.lineStuff();
 	   this.lineStuff();
 	   var perp = this.line.vector.rotate(90).normalise();
 		this.lB.absPos = this.Points[0].add(this.line.vector.times(10));
+		var  l = this.Points[0].add(this.line.vector.times(10));
+		if(isNaN(l.x)){
+			console.log(Maths.equals(this.line.endPoint,this.line.begPoint));
+		}
+		
 		//console.log(this.lB.render.absPos);
-	 //this.lB.absPos.move(perp.times(10));
+		this.lB.absPos.move(perp.times(this.width/4));
 		//this.lB.render.absPos.z+=10;
 		this.lB.update();
 		// console.log(this.lB.render.absPos.toString());
@@ -1673,10 +1697,7 @@ class roadManager{
 		lengths[1] = lengths[1].distanceBetween(road2.lineR.begPoint);
 		lengths = Math.max(lengths[0],lengths[1]);
 		var begRoad = new Road(road1.game,[otherP,otherP.add(otherV.times(lengths))]);
-		//road2.lineR.clearInters();
-		//road2.lineL.clearInters();
-		var lC = lE.centre.copy();
-		var rC = rE.centre.copy();
+		
 		road1.mRoad.addSubObject(lE.render);
 		road1.mRoad.addSubObject(rE.render)
 		lE.render.setAbsPos(lE.render.relPos)
@@ -1750,11 +1771,8 @@ class roadManager{
 		}
 		begRoad.line.clearInters();
 		
-		
-		/**begRoad.b = new sNode(road.game,begRoad.leftL.intersect(incomeB),"beg",begRoad.leftL);
-		begRoad.b2 = new sNode(road.game,begRoad.rightL.intersect(incomeB),"end",begRoad.rightL);
-		begRoad.b2.render.colour = "grey";
-		**/
+		begRoad.lB.absPos = begRoad.Points[0]
+		begRoad.lB.update();
 		begRoad.leftL.clearInters();
 		begRoad.rightL.clearInters();
 		endRoad.leftL.intersect(incomeE);
@@ -1775,6 +1793,7 @@ class node{
 		this.type = type;
 		this.colour = (this.type =="beg")?"yellow":"orange";
 		this.render = new object(this.game,this.absPos,"RECT",[0,0],this.colour);
+		this.id = randomID();
 	}
 	update(){
 		this.render.setAbsPos(this.absPos);
@@ -1800,11 +1819,14 @@ class sNode{
 			this.line = line;
 			this.line.render.addSubObject(this.render);
 		}
-		console.log(this.render.absPos.toString(),"FFF")
+		//console.log(this.render.absPos.toString(),"FFF")
 		this.render.setAbsPos(this.absPos);
-		console.log(this.render.absPos.toString(),"AAAAAA")
-		console.log();
-		console.log();
+		if(!this.render.absPos.x){
+			console.log(this.absPos.toString(),"abs.",this.render.absPos.toString(),"rend")
+		}
+		//console.log(this.render.absPos.toString(),"AAAAAA")
+		//console.log(" ");
+		//console.log(" ");
 		//console.log();
 	}
 }

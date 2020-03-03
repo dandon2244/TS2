@@ -68,7 +68,19 @@ var isColliding = function(rect1, rect2) {
   return true;
 }
 var randomID = function(){
-	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+	var c;
+	var s = "";
+	for(var x = 0; x<20;x++){
+		c = parseInt(Math.random()*36);
+		if(c<26){
+			c = String.fromCharCode(65+c)
+		}
+		else{
+			c = c -26;
+		}
+		s+=c;
+	}
+	return s;
 }
 var getAxes = function(rect) {
   return [new Point(Maths.cos(rect.angle), Maths.sin(rect.angle)),new Point(Maths.cos(rect.angle + 90), Maths.sin(rect.angle + 90))];
