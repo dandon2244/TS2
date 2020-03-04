@@ -46,14 +46,29 @@ this.lineStuff();
      if(Points.length == 2){
 		 roadManager.createPaths(this);
 	 }
-	 
-	 this.lB = new sNode(this.game,new Point(10,10),"beg",this.lineL);
 	 var perp = this.line.vector.rotate(90).normalise();
-	 this.lB.absPos = this.Points[0].add(this.line.vector.normalise().times(10));
+	 
+	 var i = this.Points[0].add(this.line.vector.times(10));
+	 this.lB = new sNode(this.game,i,"beg",this.lineL);
 	 this.lB.absPos.move(perp.times(this.width/4));
 	 this.lB.render.absPos.z+=10;
 	 this.lB.update();
-	
+	 
+	 this.rE = new sNode(this.game,i,"end",this.lineR);
+	 this.rE.absPos.move(perp.times(-this.width/4));
+	 this.rE.render.absPos.z+=10;
+	 this.rE.update();
+	 
+	 i = this.Points[1].minus(this.line.vector.times(10));
+	 this.lE = new sNode(this.game,i,"end",this.lineL);
+	 this.lE.absPos.move(perp.times(this.width/4));
+	 this.lE.render.absPos.z+=10;
+	 this.lE.update();
+	 
+	 this.rB = new sNode(this.game,i,"beg",this.lineR);
+	 this.rB.absPos.move(perp.times(-this.width/4));
+	 this.rB.render.absPos.z+=10;
+	 this.rB.update();
 	
   }
 
@@ -98,17 +113,27 @@ this.lineStuff();
 	   this.end.update();
 	   this.lineStuff();
 	   var perp = this.line.vector.rotate(90).normalise();
-		this.lB.absPos = this.Points[0].add(this.line.vector.times(10));
-		var  l = this.Points[0].add(this.line.vector.times(10));
-
 		
-		//console.log(this.lB.render.absPos);
+		var  l = this.Points[0].add(this.line.vector.times(10));
+		
+		this.lB.absPos = l.copy();
 		this.lB.absPos.move(perp.times(this.width/4));
-		//this.lB.render.absPos.z+=10;
 		this.lB.update();
-		// console.log(this.lB.render.absPos.toString());
-		// console.log(this.line);
-	 
+		
+		this.rE.absPos = l.copy();
+		this.rE.absPos.move(perp.times(-this.width/4))
+		this.rE.update();
+		this.rE.update();
+		
+		l = this.Points[1].minus(this.line.vector.times(10));
+		this.lE.absPos = l.copy();
+		this.lE.absPos.move(perp.times(this.width/4));
+		this.lE.update();
+		
+		this.rB.absPos = l.copy();
+		this.rB.absPos.move(perp.times(-this.width/4));
+		this.rB.update();
+	
 
   }
   setAngle(ang) {

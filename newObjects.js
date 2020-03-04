@@ -71,6 +71,7 @@ class object {
 	
 	if(this.type == "LINE"){
 		this.line.vector = this.line.vector.rotate(ang);
+		console.log("YO");
 		
 		this.line.centre = rotatePoint(ang,origin,this.line.centre);
 		this.line.update();

@@ -123,8 +123,8 @@ class Line {
 	  }
 	  
 	 
-	  other.vector = Maths.normalize(other.vector);
-	  this.vector = Maths.normalize(this.vector);
+	  other.vector = other.vector.normalise();
+	  this.vector = this.vector.normalise();
 	  if(Maths.equals(this.vector,other.vector)){ //parallel
 		 if(this.pointOnLine(other.centre)){ // same Line
 			 return other

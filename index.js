@@ -3,7 +3,7 @@ class Game {
 	
     this.mouseMode = "auto";
     this.road = null;
-    this.collisionPairs = { frame: ["frame","road"], hitbox: ["frame"],road:["road"] };
+    this.collisionPairs = { frame: ["frame","road","endNode"], hitbox: ["frame"],road:["road"],begNode:["frame"],endNode:["frame"] };
     this.mousePos = new Point(0, 0);
     this.canvas = document.getElementById("gameCanvas");
     
@@ -31,7 +31,12 @@ class Game {
 	//this.line = new Line(this,new Point(10,0,3),new Vector(1,1),30);
 	//this.line2 = new Line(this,new Point(20,0,3), new Vector (-1.000001,1),30);
     //this.line.intersect(this.line2)
-   this.cars.push(new Car(new Point(100 + x * 100, 0, 1), "purple", this));
+   //this.cars.push(new Car(new Point(100 + x * 100, 0, 1), "purple", this));
+    this.p1 = new object(this,new Point(-100,100),"CIRCLE",[10],"purple");
+	this.p2 = new object(this, new Point(100,200),"CIRCLE",[10],"green");
+	this.cars[0].move(this.p1.absPos.minus(this.cars[0].position),false);
+	this.cars[0].rotate(90,false);
+	this.cars[0].turn(this.p2.absPos,0);
     this.map = new Map(this);
     this.map.update();
 	//new Road(this,[new Point(500,0),new Point(0,0)])
@@ -153,12 +158,23 @@ class Game {
     g.context.fillStyle = "#fcf2d2";
     g.context.fillRect(0, 0, g.canvas.width, g.canvas.height);
     if (this.running) {
-		//this.roads[0].mRoad.rotateAll(90,this.roads[0].mRoad.absPos);
-		//this.cars[0].rotate(90);
+		this.cars[0].turn(this.p2.absPos,0);
+		if(!this.spawn){
+			//var p = this.roads[0].lB.absPos.copy();
+			//this.cars.push(new Car(p,"p",this));
+			//this.cars[1].rotate(this.roads[0].leftL.vector.getAngle()-this.cars[1].angle,false);
+			//this.cars[1].move(new Vector(0,0,20));
+			//console.log(this.roads[0].leftL.vector);
+	//		this.ca
+			this.spawn = true;
+		}
+	//	if(!this.cars[1].frame.collStates["endNode"][0]){
+		//this.cars[1].move(new Vector(Maths.cos(this.cars[1].angle),Maths.sin(this.cars[1].angle)).times(100));
+		//}
       for (var i = 0; i < this.cars.length; i++) {
        // this.cars[i].run();
 	 
-	   this.cars[i].rotate(90);
+	   //this.cars[i].rotate(90);
       }
     }
      //this.line.square.absPos = this.line.centre.copy();
