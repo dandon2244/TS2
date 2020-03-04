@@ -200,32 +200,10 @@ class Camera {
     this.game.cars.splice(this.game.cars.indexOf(this), 1);
   }
   turn(pos,angle){
-	  if(this.angle>-4 && this.angle <4){
-		  this.rotate(angle-this.angle,false);
-		  this.frame.setAbsPos(pos);
-		  //console.log(this.angle)
-		  return;
-	  }
-	  if(!this.p){
-	  var tL = new Line(this.game,pos,new Vector(Maths.cos(angle+90),Maths.sin(angle+90)),null);
-	  var cL = new Line(this.game,this.position,new Vector(Maths.cos(this.angle+90),Maths.sin(this.angle+90)),null);
-	  
-	this.p = tL.intersect(cL);
-	this.dx = pos.x-this.position.x;
-	this.dy = pos.y - this.position.y;
-	  console.log(this.dx,this.dy);
-	tL.render.rendering = false;
-	cL.render.rendering = false;
-	  }
-	 this.angle -= 90*this.game.DT;
-	//this.rotate(-90);
-	  var v = new Vector(Maths.cos(this.angle)*this.dx,Maths.sin(this.angle)*this.dy)
-	  this.move(new Vector(10*Maths.cos(this.angle),5*Maths.sin(this.angle)).times(100));
-	  
-	  
-	  
-	  
-	  
+	 this.position = pos.copy();
+	 this.frame.setAbsPos(pos);
+	 this.rotate(angle-this.angle,false);
+	 return true;
   }
 }
 
@@ -1540,6 +1518,9 @@ this.lineStuff();
 	 this.rB.absPos.move(perp.times(-this.width/4));
 	 this.rB.render.absPos.z+=10;
 	 this.rB.update();
+	 
+	 this.lB.connections.push(this.lE);
+	 this.rB.connections.push(this.rE);
 	
   }
 
@@ -1559,31 +1540,31 @@ this.lineStuff();
 		this.Points[1] = rotatePoint(90.1-temp,this.Points[0],this.Points[1]);
 	}
     
-    this.length =
-      (this.Points[0].x - this.Points[1].x) ** 2 +
-      (this.Points[0].y - this.Points[1].y) ** 2;
-    this.length = Math.sqrt(this.length);
-	 this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
+		this.length =
+			(this.Points[0].x - this.Points[1].x) ** 2 +
+			(this.Points[0].y - this.Points[1].y) ** 2;
+		this.length = Math.sqrt(this.length);
+		this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
     
-	this.mRoad.absPos = this.centre.copy();
-       this.mRoad.size[0] = this.length;
-       this.mRoad.angle = this.angle;
-	   this.beg.angle = this.angle;
+		this.mRoad.absPos = this.centre.copy();
+		this.mRoad.size[0] = this.length;
+		this.mRoad.angle = this.angle;
+		this.beg.angle = this.angle;
 	  
 		
-	   var target = new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).add(this.centre.copy())
-	   var target2= new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).times(-1).add(this.centre.copy());
-	   var begRef = this.beg;
-	   this.beg.absPos =(target2);
+		var target = new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).add(this.centre.copy())
+		var target2= new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).times(-1).add(this.centre.copy());
+		var begRef = this.beg;
+		this.beg.absPos =(target2);
 	   
 	   //begRef.delete();
-	  this.beg.angle = this.angle;
-	  this.beg.update();
-	   this.end.absPos = target;
-	   this.end.angle = this.angle;
-	   this.end.update();
-	   this.lineStuff();
-	   var perp = this.line.vector.rotate(90).normalise();
+		this.beg.angle = this.angle;
+		this.beg.update();
+		this.end.absPos = target;
+		this.end.angle = this.angle;
+		this.end.update();
+		this.lineStuff();
+		var perp = this.line.vector.rotate(90).normalise();
 		
 		var  l = this.Points[0].add(this.line.vector.times(10));
 		
@@ -1604,8 +1585,7 @@ this.lineStuff();
 		this.rB.absPos = l.copy();
 		this.rB.absPos.move(perp.times(-this.width/4));
 		this.rB.update();
-	
-
+		
   }
   setAngle(ang) {
     this.mRoad.rotate(ang, false);
@@ -1854,7 +1834,7 @@ class roadManager{
 		endRoad.rightL.clearInters();
 		road.leftL.clearInters();
 		road.rightL.clearInters();
-	    
+		
 		lE.delete();
 		rE.delete();
 	}
@@ -1864,6 +1844,7 @@ class node{
 	constructor(game,pos,type,line){
 		this.game = game;
 		this.line = line;
+		
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
@@ -1885,9 +1866,15 @@ class sNode{
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
-		this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg")?"purple":"green",this.type=="beg"?"begNode":"endNode",true);
+		this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
 		this.line = line;
-		//console.log(this.line)
+		if(this.type == "beg"){
+		this.line.bNode = this;
+		}
+		else{
+			this.line.eNode = this;
+		}
+		this.connections = [];
 		this.render.angle = this.line.vector.getAngle();
 		this.line.render.addSubObject(this.render);
 		this.render.setAbsPos(this.absPos);
@@ -1903,8 +1890,14 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
-			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"purple":"green"));
+			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"green":"purple"));
 			this.line.render.addSubObject(this.render);
+			if(this.type == "beg"){
+				this.line.bNode = this;
+			}
+			else{
+				this.line.eNode = this;
+			}
 		}
 		this.render.setAbsPos(this.absPos);
 		this.render.angle = this.line.vector.getAngle();
@@ -1915,17 +1908,18 @@ class sNode{
 }
 
 class intersection{
-	constructor(roads){
-		this.ax1 = [roads[0]]
-		this.ax2 = [];
-		for(var x = 1;x<roads.length;x++){
-			if(roads[x].line.vector.parallel(roads[0].line.vector)){	
-				this.ax1.push(roads[x]);
-			}
-			else{
-				this.ax2.push(roads[x]);
-			}
-		}
+	constructor(rNs){
+		console.log("YO");
+		//this.ax1 = [roads[0]]
+		////this.ax2 = [];
+		//for(var x = 1;x<roads.length;x++){
+		//	if(roads[x].line.vector.parallel(roads[0].line.vector)){	
+		//		this.ax1.push(roads[x]);
+		//	}
+		//	else{
+		//		this.ax2.push(roads[x]);
+		//	}
+		//}
 		/*for(var x = 0;x<this.ax1.length;x++){
 			this.ax1[x].leftL.render.colour = "red";
 		}
@@ -2059,7 +2053,7 @@ class Game {
 	this.p2 = new object(this, new Point(100,200),"CIRCLE",[10],"green");
 	this.cars[0].move(this.p1.absPos.minus(this.cars[0].position),false);
 	this.cars[0].rotate(90,false);
-	this.cars[0].turn(this.p2.absPos,0);
+//	this.cars[0].turn(this.p2.absPos,0);
     this.map = new Map(this);
     this.map.update();
 	//new Road(this,[new Point(500,0),new Point(0,0)])

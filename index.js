@@ -36,7 +36,7 @@ class Game {
 	this.p2 = new object(this, new Point(100,200),"CIRCLE",[10],"green");
 	this.cars[0].move(this.p1.absPos.minus(this.cars[0].position),false);
 	this.cars[0].rotate(90,false);
-	this.cars[0].turn(this.p2.absPos,0);
+//	this.cars[0].turn(this.p2.absPos,0);
     this.map = new Map(this);
     this.map.update();
 	//new Road(this,[new Point(500,0),new Point(0,0)])

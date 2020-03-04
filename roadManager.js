@@ -171,7 +171,7 @@ class roadManager{
 		endRoad.rightL.clearInters();
 		road.leftL.clearInters();
 		road.rightL.clearInters();
-	    
+		
 		lE.delete();
 		rE.delete();
 	}
@@ -181,6 +181,7 @@ class node{
 	constructor(game,pos,type,line){
 		this.game = game;
 		this.line = line;
+		
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
@@ -202,9 +203,15 @@ class sNode{
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
-		this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg")?"purple":"green",this.type=="beg"?"begNode":"endNode",true);
+		this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
 		this.line = line;
-		//console.log(this.line)
+		if(this.type == "beg"){
+		this.line.bNode = this;
+		}
+		else{
+			this.line.eNode = this;
+		}
+		this.connections = [];
 		this.render.angle = this.line.vector.getAngle();
 		this.line.render.addSubObject(this.render);
 		this.render.setAbsPos(this.absPos);
@@ -220,8 +227,14 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
-			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"purple":"green"));
+			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"green":"purple"));
 			this.line.render.addSubObject(this.render);
+			if(this.type == "beg"){
+				this.line.bNode = this;
+			}
+			else{
+				this.line.eNode = this;
+			}
 		}
 		this.render.setAbsPos(this.absPos);
 		this.render.angle = this.line.vector.getAngle();
@@ -232,17 +245,18 @@ class sNode{
 }
 
 class intersection{
-	constructor(roads){
-		this.ax1 = [roads[0]]
-		this.ax2 = [];
-		for(var x = 1;x<roads.length;x++){
-			if(roads[x].line.vector.parallel(roads[0].line.vector)){	
-				this.ax1.push(roads[x]);
-			}
-			else{
-				this.ax2.push(roads[x]);
-			}
-		}
+	constructor(rNs){
+		console.log("YO");
+		//this.ax1 = [roads[0]]
+		////this.ax2 = [];
+		//for(var x = 1;x<roads.length;x++){
+		//	if(roads[x].line.vector.parallel(roads[0].line.vector)){	
+		//		this.ax1.push(roads[x]);
+		//	}
+		//	else{
+		//		this.ax2.push(roads[x]);
+		//	}
+		//}
 		/*for(var x = 0;x<this.ax1.length;x++){
 			this.ax1[x].leftL.render.colour = "red";
 		}

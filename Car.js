@@ -176,31 +176,9 @@
     this.game.cars.splice(this.game.cars.indexOf(this), 1);
   }
   turn(pos,angle){
-	  if(this.angle>-4 && this.angle <4){
-		  this.rotate(angle-this.angle,false);
-		  this.frame.setAbsPos(pos);
-		  //console.log(this.angle)
-		  return;
-	  }
-	  if(!this.p){
-	  var tL = new Line(this.game,pos,new Vector(Maths.cos(angle+90),Maths.sin(angle+90)),null);
-	  var cL = new Line(this.game,this.position,new Vector(Maths.cos(this.angle+90),Maths.sin(this.angle+90)),null);
-	  
-	this.p = tL.intersect(cL);
-	this.dx = pos.x-this.position.x;
-	this.dy = pos.y - this.position.y;
-	  console.log(this.dx,this.dy);
-	tL.render.rendering = false;
-	cL.render.rendering = false;
-	  }
-	 this.angle -= 90*this.game.DT;
-	//this.rotate(-90);
-	  var v = new Vector(Maths.cos(this.angle)*this.dx,Maths.sin(this.angle)*this.dy)
-	  this.move(new Vector(10*Maths.cos(this.angle),5*Maths.sin(this.angle)).times(100));
-	  
-	  
-	  
-	  
-	  
+	 this.position = pos.copy();
+	 this.frame.setAbsPos(pos);
+	 this.rotate(angle-this.angle,false);
+	 return true;
   }
 }

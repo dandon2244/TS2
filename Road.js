@@ -69,6 +69,9 @@ this.lineStuff();
 	 this.rB.absPos.move(perp.times(-this.width/4));
 	 this.rB.render.absPos.z+=10;
 	 this.rB.update();
+	 
+	 this.lB.connections.push(this.lE);
+	 this.rB.connections.push(this.rE);
 	
   }
 
@@ -88,31 +91,31 @@ this.lineStuff();
 		this.Points[1] = rotatePoint(90.1-temp,this.Points[0],this.Points[1]);
 	}
     
-    this.length =
-      (this.Points[0].x - this.Points[1].x) ** 2 +
-      (this.Points[0].y - this.Points[1].y) ** 2;
-    this.length = Math.sqrt(this.length);
-	 this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
+		this.length =
+			(this.Points[0].x - this.Points[1].x) ** 2 +
+			(this.Points[0].y - this.Points[1].y) ** 2;
+		this.length = Math.sqrt(this.length);
+		this.centre = this.Points[0].add(new Vector(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2)) 
     
-	this.mRoad.absPos = this.centre.copy();
-       this.mRoad.size[0] = this.length;
-       this.mRoad.angle = this.angle;
-	   this.beg.angle = this.angle;
+		this.mRoad.absPos = this.centre.copy();
+		this.mRoad.size[0] = this.length;
+		this.mRoad.angle = this.angle;
+		this.beg.angle = this.angle;
 	  
 		
-	   var target = new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).add(this.centre.copy())
-	   var target2= new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).times(-1).add(this.centre.copy());
-	   var begRef = this.beg;
-	   this.beg.absPos =(target2);
+		var target = new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).add(this.centre.copy())
+		var target2= new Point(Maths.cos(this.angle),Maths.sin(this.angle)).times(this.length/2-(20/2)).times(-1).add(this.centre.copy());
+		var begRef = this.beg;
+		this.beg.absPos =(target2);
 	   
 	   //begRef.delete();
-	  this.beg.angle = this.angle;
-	  this.beg.update();
-	   this.end.absPos = target;
-	   this.end.angle = this.angle;
-	   this.end.update();
-	   this.lineStuff();
-	   var perp = this.line.vector.rotate(90).normalise();
+		this.beg.angle = this.angle;
+		this.beg.update();
+		this.end.absPos = target;
+		this.end.angle = this.angle;
+		this.end.update();
+		this.lineStuff();
+		var perp = this.line.vector.rotate(90).normalise();
 		
 		var  l = this.Points[0].add(this.line.vector.times(10));
 		
@@ -133,8 +136,7 @@ this.lineStuff();
 		this.rB.absPos = l.copy();
 		this.rB.absPos.move(perp.times(-this.width/4));
 		this.rB.update();
-	
-
+		
   }
   setAngle(ang) {
     this.mRoad.rotate(ang, false);
