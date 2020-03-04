@@ -214,9 +214,10 @@ class Camera {
 	tL.render.rendering = false;
 	cL.render.rendering = false;
 	  }
-	  this.angle -= 100 * this.game.DT
+	  this.angle += (angle- this.angle)*this.game.DT;
+	  this.move(pos.minus(this.position));
+	  this.frame.rotateAll(angle-this.angle,this.frame.absPos);
 	  
-	  this.frame.rotateAll(-100,this.p)
 	  
 	  
   }
