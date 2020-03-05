@@ -1492,29 +1492,44 @@ class object {
 this.mRoad.angle = this.angle;
 this.mRoad.transparency = 0.7;
 this.lineStuff();
-     if(Points.length == 2){
-		 roadManager.createPaths(this);
-	 }
-	 var perp = this.line.vector.rotate(90).normalise();
+	
+	  var perp = this.line.vector.rotate(90).normalise();
+	 
 	 
 	 var i = this.Points[0].add(this.line.vector.times(10));
-	 this.lB = new sNode(this.game,i,"beg",this.lineL);
+     if(Points.length == 2){
+		 roadManager.createPaths(this);
+		 this.lB = new sNode(this.game,i,"beg",this.leftL);
+		 this.rE = new sNode(this.game,i,"end",this.rightL);
+		 i = this.Points[1].minus(this.line.vector.times(10));
+		 this.lE = new sNode(this.game,i,"end",this.leftL);
+		 this.rB = new sNode(this.game,i,"beg",this.rightL);
+	 }
+	 else{
+		 this.lB = new sNode(this.game,i,"beg",this.lineL);
+		 this.rE = new sNode(this.game,i,"end",this.lineR);
+		  i = this.Points[1].minus(this.line.vector.times(10));
+		  this.lE = new sNode(this.game,i,"end",this.lineL);
+		  this.rB = new sNode(this.game,i,"beg",this.lineR);
+	 }
+	
+	 
 	 this.lB.absPos.move(perp.times(this.width/4));
 	 this.lB.render.absPos.z+=10;
 	 this.lB.update();
 	 
-	 this.rE = new sNode(this.game,i,"end",this.lineR);
+	 
 	 this.rE.absPos.move(perp.times(-this.width/4));
 	 this.rE.render.absPos.z+=10;
 	 this.rE.update();
 	 
-	 i = this.Points[1].minus(this.line.vector.times(10));
-	 this.lE = new sNode(this.game,i,"end",this.lineL);
+	
+	 
 	 this.lE.absPos.move(perp.times(this.width/4));
 	 this.lE.render.absPos.z+=10;
 	 this.lE.update();
 	 
-	 this.rB = new sNode(this.game,i,"beg",this.lineR);
+	 
 	 this.rB.absPos.move(perp.times(-this.width/4));
 	 this.rB.render.absPos.z+=10;
 	 this.rB.update();
@@ -1586,6 +1601,7 @@ this.lineStuff();
 		this.rB.absPos.move(perp.times(-this.width/4));
 		this.rB.update();
 		
+		
   }
   setAngle(ang) {
     this.mRoad.rotate(ang, false);
@@ -1625,6 +1641,11 @@ this.lineStuff();
 	}
 	
 	roadManager.createPaths(this);
+	this.lB.update(this.leftL);
+	this.lE.update(this.leftL);
+	
+	this.rB.update(this.rightL);
+	this.rE.update(this.rightL);
 	if(inters.length ==1){
 		roadManager.interway(this,others)
 	}
@@ -1732,20 +1753,20 @@ class roadManager{
 		
 		begRoad.lB.delete();
 		begRoad.lB = road2.lB;
-		begRoad.lB.update(begRoad.lineL);
+		begRoad.lB.update(begRoad.leftL);
 		
 		begRoad.rE.delete();
 		begRoad.rE = road2.rE;
-		begRoad.rE.update(begRoad.lineR);
+		begRoad.rE.update(begRoad.rightL);
 		
 		
 		endRoad.lE.delete();
 		endRoad.lE = road2.lE;
-		endRoad.lE.update(endRoad.lineL);
+		endRoad.lE.update(endRoad.leftL);
 		
 		endRoad.rB.delete();
 		endRoad.rB = road2.rB;
-		endRoad.rB.update(endRoad.lineR);
+		endRoad.rB.update(endRoad.rightL);
 		
 		
 		road1.mRoad.addSubObject(lE.render);
@@ -1765,6 +1786,12 @@ class roadManager{
 	}
 	
 	static createPaths(road){
+		if(road.leftPath){
+			road.leftPath.delete();
+			road.rightPath.delete();
+			road.leftL.delete();
+			road.rightL.delete();
+		}
 		var perp = road.line.vector.rotate(90).normalise();
 		var leftCent = road.centre.copy()
 		leftCent.move(perp.times(road.mRoad.size[1]/4));
@@ -1782,7 +1809,9 @@ class roadManager{
 		road.rightPath.transparency = 0.5;
 		road.leftL = new Line(road.game,road.leftPath.absPos.copy(),road.line.vector.copy(),road.length,false);
 		road.leftPath.addSubObject(road.leftL.render);
-		road.rightL = new Line(road.game,road.rightPath.absPos.copy(),road.line.vector.copy(),road.length,false);
+		road.rightL = new Line(road.game,road.rightPath.absPos.copy(),road.line.vector.times(-1),road.length,false);
+		road.rightL.road = road;
+		road.leftL.road = road;
 		road.rightPath.addSubObject(road.rightL.render);
 	}
 	static interway(road,others){
@@ -1898,6 +1927,9 @@ class sNode{
 			else{
 				this.line.eNode = this;
 			}
+		}
+		if(this.type=="beg"){
+			this.connections = [this.line.eNode];
 		}
 		this.render.setAbsPos(this.absPos);
 		this.render.angle = this.line.vector.getAngle();

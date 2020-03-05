@@ -43,29 +43,44 @@
 this.mRoad.angle = this.angle;
 this.mRoad.transparency = 0.7;
 this.lineStuff();
-     if(Points.length == 2){
-		 roadManager.createPaths(this);
-	 }
-	 var perp = this.line.vector.rotate(90).normalise();
+	
+	  var perp = this.line.vector.rotate(90).normalise();
+	 
 	 
 	 var i = this.Points[0].add(this.line.vector.times(10));
-	 this.lB = new sNode(this.game,i,"beg",this.lineL);
+     if(Points.length == 2){
+		 roadManager.createPaths(this);
+		 this.lB = new sNode(this.game,i,"beg",this.leftL);
+		 this.rE = new sNode(this.game,i,"end",this.rightL);
+		 i = this.Points[1].minus(this.line.vector.times(10));
+		 this.lE = new sNode(this.game,i,"end",this.leftL);
+		 this.rB = new sNode(this.game,i,"beg",this.rightL);
+	 }
+	 else{
+		 this.lB = new sNode(this.game,i,"beg",this.lineL);
+		 this.rE = new sNode(this.game,i,"end",this.lineR);
+		  i = this.Points[1].minus(this.line.vector.times(10));
+		  this.lE = new sNode(this.game,i,"end",this.lineL);
+		  this.rB = new sNode(this.game,i,"beg",this.lineR);
+	 }
+	
+	 
 	 this.lB.absPos.move(perp.times(this.width/4));
 	 this.lB.render.absPos.z+=10;
 	 this.lB.update();
 	 
-	 this.rE = new sNode(this.game,i,"end",this.lineR);
+	 
 	 this.rE.absPos.move(perp.times(-this.width/4));
 	 this.rE.render.absPos.z+=10;
 	 this.rE.update();
 	 
-	 i = this.Points[1].minus(this.line.vector.times(10));
-	 this.lE = new sNode(this.game,i,"end",this.lineL);
+	
+	 
 	 this.lE.absPos.move(perp.times(this.width/4));
 	 this.lE.render.absPos.z+=10;
 	 this.lE.update();
 	 
-	 this.rB = new sNode(this.game,i,"beg",this.lineR);
+	 
 	 this.rB.absPos.move(perp.times(-this.width/4));
 	 this.rB.render.absPos.z+=10;
 	 this.rB.update();
@@ -137,6 +152,7 @@ this.lineStuff();
 		this.rB.absPos.move(perp.times(-this.width/4));
 		this.rB.update();
 		
+		
   }
   setAngle(ang) {
     this.mRoad.rotate(ang, false);
@@ -176,6 +192,11 @@ this.lineStuff();
 	}
 	
 	roadManager.createPaths(this);
+	this.lB.update(this.leftL);
+	this.lE.update(this.leftL);
+	
+	this.rB.update(this.rightL);
+	this.rE.update(this.rightL);
 	if(inters.length ==1){
 		roadManager.interway(this,others)
 	}
