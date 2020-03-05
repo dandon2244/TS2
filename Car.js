@@ -32,7 +32,7 @@
       new Point(this.frame.size[0] / 2 - 10, 0, 2),
       "RECT",
       [20, this.frame.size[1]],
-      "#d8e8e6"
+      "#d8e8e6","window",true
     );
     this.leftHead = new object(
       game,
@@ -111,7 +111,7 @@
         this.mouseOffset[0] = true;
         this.thisOff = this.mouseOffset[1].minus(this.position);
       }
-      if (this.frame.collStates["frame"][0]||this.frame.collStates["road"][0]) {
+      if (this.frame.collStates["frame"][0]||this.frame.collStates["endNode"][0]) {
         this.selectedFrame.colour = "red";
       } else {
         this.selectedFrame.colour = "green";

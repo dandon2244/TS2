@@ -90,15 +90,20 @@ class roadManager{
 		lE.render.setAbsPos(lE.render.relPos)
 		rE.render.setAbsPos(rE.render.relPos)
 		
-
-		
-		
+		roadManager.lineUpdate(begRoad.leftL);
+		roadManager.lineUpdate(begRoad.rightL);
+		roadManager.lineUpdate(endRoad.leftL);
+		roadManager.lineUpdate(endRoad.rightL);
 		
 		road1.lineStuff();
 		road2.delete();
 		lE.delete();
 		rE.delete();
 		return [begRoad,endRoad]
+	}
+	
+	static lineUpdate(line){
+		line.bNode.connections = [line.eNode]
 	}
 	
 	static createPaths(road){
@@ -180,6 +185,8 @@ class roadManager{
 		road.leftL.clearInters();
 		road.rightL.clearInters();
 		
+		var  i = new intersection()
+		
 		lE.delete();
 		rE.delete();
 	}
@@ -212,9 +219,10 @@ class sNode{
 		this.angle = 0;
 		this.type = type;
 		this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
+		
 		this.line = line;
 		if(this.type == "beg"){
-		this.line.bNode = this;
+			this.line.bNode = this;
 		}
 		else{
 			this.line.eNode = this;
@@ -235,7 +243,7 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
-			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"green":"purple"));
+			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
 			this.line.render.addSubObject(this.render);
 			if(this.type == "beg"){
 				this.line.bNode = this;
@@ -249,6 +257,7 @@ class sNode{
 		}
 		this.render.setAbsPos(this.absPos);
 		this.render.angle = this.line.vector.getAngle();
+		this.render.id = this.type+"Node";
 	}
 	delete(){
 		this.render.delete();
@@ -257,7 +266,9 @@ class sNode{
 
 class intersection{
 	constructor(rNs){
-		console.log("YO");
+		this.rNs = rNs;
+		this.roads  = Object.keys(this.rNs);
+		this.nodes = Objects.values(this.rNs);
 		//this.ax1 = [roads[0]]
 		////this.ax2 = [];
 		//for(var x = 1;x<roads.length;x++){

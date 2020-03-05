@@ -56,7 +56,7 @@ class Camera {
       new Point(this.frame.size[0] / 2 - 10, 0, 2),
       "RECT",
       [20, this.frame.size[1]],
-      "#d8e8e6"
+      "#d8e8e6","window",true
     );
     this.leftHead = new object(
       game,
@@ -135,7 +135,7 @@ class Camera {
         this.mouseOffset[0] = true;
         this.thisOff = this.mouseOffset[1].minus(this.position);
       }
-      if (this.frame.collStates["frame"][0]||this.frame.collStates["road"][0]) {
+      if (this.frame.collStates["frame"][0]||this.frame.collStates["endNode"][0]) {
         this.selectedFrame.colour = "red";
       } else {
         this.selectedFrame.colour = "green";
@@ -1774,15 +1774,20 @@ class roadManager{
 		lE.render.setAbsPos(lE.render.relPos)
 		rE.render.setAbsPos(rE.render.relPos)
 		
-
-		
-		
+		roadManager.lineUpdate(begRoad.leftL);
+		roadManager.lineUpdate(begRoad.rightL);
+		roadManager.lineUpdate(endRoad.leftL);
+		roadManager.lineUpdate(endRoad.rightL);
 		
 		road1.lineStuff();
 		road2.delete();
 		lE.delete();
 		rE.delete();
 		return [begRoad,endRoad]
+	}
+	
+	static lineUpdate(line){
+		line.bNode.connections = [line.eNode]
 	}
 	
 	static createPaths(road){
@@ -1864,6 +1869,8 @@ class roadManager{
 		road.leftL.clearInters();
 		road.rightL.clearInters();
 		
+		var  i = new intersection()
+		
 		lE.delete();
 		rE.delete();
 	}
@@ -1896,9 +1903,10 @@ class sNode{
 		this.angle = 0;
 		this.type = type;
 		this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
+		
 		this.line = line;
 		if(this.type == "beg"){
-		this.line.bNode = this;
+			this.line.bNode = this;
 		}
 		else{
 			this.line.eNode = this;
@@ -1919,7 +1927,7 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
-			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"green":"purple"));
+			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
 			this.line.render.addSubObject(this.render);
 			if(this.type == "beg"){
 				this.line.bNode = this;
@@ -1933,6 +1941,7 @@ class sNode{
 		}
 		this.render.setAbsPos(this.absPos);
 		this.render.angle = this.line.vector.getAngle();
+		this.render.id = this.type+"Node";
 	}
 	delete(){
 		this.render.delete();
@@ -1941,7 +1950,9 @@ class sNode{
 
 class intersection{
 	constructor(rNs){
-		console.log("YO");
+		this.rNs = rNs;
+		this.roads  = Object.keys(this.rNs);
+		this.nodes = Objects.values(this.rNs);
 		//this.ax1 = [roads[0]]
 		////this.ax2 = [];
 		//for(var x = 1;x<roads.length;x++){
@@ -2052,7 +2063,7 @@ class Game {
 	
     this.mouseMode = "auto";
     this.road = null;
-    this.collisionPairs = { frame: ["frame","road","endNode"], hitbox: ["frame"],road:["road"],begNode:["frame"],endNode:["frame"] };
+    this.collisionPairs = { window:["endNode","begNode"],frame: ["frame","road","endNode","begNode"], hitbox: ["frame"],road:["road"],begNode:["frame"],endNode:["frame"] };
     this.mousePos = new Point(0, 0);
     this.canvas = document.getElementById("gameCanvas");
     
@@ -2207,17 +2218,27 @@ class Game {
     g.context.fillStyle = "#fcf2d2";
     g.context.fillRect(0, 0, g.canvas.width, g.canvas.height);
     if (this.running) {
-		this.cars[0].turn(this.p2.absPos,0);
+		//this.cars[0].turn(this.p2.absPos,0);
+		
 		if(!this.spawn){
-			//var p = this.roads[0].lB.absPos.copy();
-			//this.cars.push(new Car(p,"p",this));
-			//this.cars[1].rotate(this.roads[0].leftL.vector.getAngle()-this.cars[1].angle,false);
-			//this.cars[1].move(new Vector(0,0,20));
-			//console.log(this.roads[0].leftL.vector);
-	//		this.ca
+			this.crash =  false;
 			this.spawn = true;
+			if(this.roads.length >0){
+				var r = this.roads[parseInt(Math.random() *this.roads.length)]
+				r.mRoad.rendering = false;
+				this.cars[0].move(r.lB.absPos.minus(this.cars[0].position),false);
+				this.cars[0].rotate(r.lB.line.vector.getAngle()-this.cars[0].angle,false);
+			}
 		}
-	//	if(!this.cars[1].frame.collStates["endNode"][0]){
+		
+		if(this.cars[0].window.collStates["endNode"][0]){
+			
+			this.crash = true;
+		}
+         
+		if(!this.crash){
+		this.cars[0].move(new Vector(Maths.cos(this.cars[0].angle),Maths.sin(this.cars[0].angle)).times(100));
+		}//	if(!this.cars[1].frame.collStates["endNode"][0]){
 		//this.cars[1].move(new Vector(Maths.cos(this.cars[1].angle),Maths.sin(this.cars[1].angle)).times(100));
 		//}
       for (var i = 0; i < this.cars.length; i++) {

@@ -3,7 +3,7 @@ class Game {
 	
     this.mouseMode = "auto";
     this.road = null;
-    this.collisionPairs = { frame: ["frame","road","endNode"], hitbox: ["frame"],road:["road"],begNode:["frame"],endNode:["frame"] };
+    this.collisionPairs = { window:["endNode","begNode"],frame: ["frame","road","endNode","begNode"], hitbox: ["frame"],road:["road"],begNode:["frame"],endNode:["frame"] };
     this.mousePos = new Point(0, 0);
     this.canvas = document.getElementById("gameCanvas");
     
@@ -158,17 +158,27 @@ class Game {
     g.context.fillStyle = "#fcf2d2";
     g.context.fillRect(0, 0, g.canvas.width, g.canvas.height);
     if (this.running) {
-		this.cars[0].turn(this.p2.absPos,0);
+		//this.cars[0].turn(this.p2.absPos,0);
+		
 		if(!this.spawn){
-			//var p = this.roads[0].lB.absPos.copy();
-			//this.cars.push(new Car(p,"p",this));
-			//this.cars[1].rotate(this.roads[0].leftL.vector.getAngle()-this.cars[1].angle,false);
-			//this.cars[1].move(new Vector(0,0,20));
-			//console.log(this.roads[0].leftL.vector);
-	//		this.ca
+			this.crash =  false;
 			this.spawn = true;
+			if(this.roads.length >0){
+				var r = this.roads[parseInt(Math.random() *this.roads.length)]
+				r.mRoad.rendering = false;
+				this.cars[0].move(r.lB.absPos.minus(this.cars[0].position),false);
+				this.cars[0].rotate(r.lB.line.vector.getAngle()-this.cars[0].angle,false);
+			}
 		}
-	//	if(!this.cars[1].frame.collStates["endNode"][0]){
+		
+		if(this.cars[0].window.collStates["endNode"][0]){
+			
+			this.crash = true;
+		}
+         
+		if(!this.crash){
+		this.cars[0].move(new Vector(Maths.cos(this.cars[0].angle),Maths.sin(this.cars[0].angle)).times(100));
+		}//	if(!this.cars[1].frame.collStates["endNode"][0]){
 		//this.cars[1].move(new Vector(Maths.cos(this.cars[1].angle),Maths.sin(this.cars[1].angle)).times(100));
 		//}
       for (var i = 0; i < this.cars.length; i++) {
