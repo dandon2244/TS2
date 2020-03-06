@@ -3,7 +3,7 @@
     this.game = game;
     this.game.roads.push(this);
     this.Points = Points;
-    this.width = 90;
+    this.width = 100;
 	this.id = randomID();
 	if(Points.length == 1){
 	this.Points =[this.Points[0].copy(),new Point(0,0)]

@@ -185,7 +185,7 @@ class roadManager{
 		road.leftL.clearInters();
 		road.rightL.clearInters();
 		
-		var  i = new intersection()
+		var  i = new intersection({begRoad:[begRoad.lE,begRoad.rB],road:[road.lE,road.rB],endRoad:[endRoad.rE,endRoad.lB]})
 		
 		lE.delete();
 		rE.delete();
@@ -218,7 +218,7 @@ class sNode{
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
-		this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
+		this.render = new object(this.game,this.absPos,"RECT",[43,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
 		
 		this.line = line;
 		if(this.type == "beg"){
@@ -243,7 +243,7 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
-			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
+			this.render = new object(this.game,this.absPos,"RECT",[43,13],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
 			this.line.render.addSubObject(this.render);
 			if(this.type == "beg"){
 				this.line.bNode = this;
@@ -257,7 +257,6 @@ class sNode{
 		}
 		this.render.setAbsPos(this.absPos);
 		this.render.angle = this.line.vector.getAngle();
-		this.render.id = this.type+"Node";
 	}
 	delete(){
 		this.render.delete();
@@ -268,7 +267,21 @@ class intersection{
 	constructor(rNs){
 		this.rNs = rNs;
 		this.roads  = Object.keys(this.rNs);
-		this.nodes = Objects.values(this.rNs);
+		this.nodes = Object.values(this.rNs);
+		this.nodes = [].concat.apply([],this.nodes);
+		for(var x = 0; x<this.nodes.length;x++){
+			var node = this.nodes[x];
+			if(node.type == "end"){
+				for(var y =0;y<this.nodes.length;y++){
+					if(this.nodes[y].type =="beg"&& this.nodes[y].line.road.id!= node.line.road.id){
+						node.connections.push(this.nodes[y]);
+					}
+				}
+			}
+			//this.nodes[x].render.colour = "red";
+		}
+		
+		//this.nodes[0].render.rendering = false;
 		//this.ax1 = [roads[0]]
 		////this.ax2 = [];
 		//for(var x = 1;x<roads.length;x++){

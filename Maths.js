@@ -6,6 +6,9 @@ static  cos(angle) {
 static  sin(angle) {
   return Math.sin((angle * Math.PI) / 180);
 }
+static random(lower,upper){
+	return parseInt(Math.random()*(upper+1-lower)+lower);
+}
 static  normalize(vec) {
 	if(Maths.equals(vec,new Vector(0,0))){
 		return vec.copy();

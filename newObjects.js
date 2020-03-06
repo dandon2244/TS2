@@ -6,6 +6,7 @@ class object {
     this.relPos = relPos.copy();
     this.absPos = this.relPos.copy();
     this.type = type;
+	this.ID = randomID();
 	if(this.colour =="random"){
 		this.colour = randomCol();
 	}

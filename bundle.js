@@ -998,6 +998,9 @@ static  cos(angle) {
 static  sin(angle) {
   return Math.sin((angle * Math.PI) / 180);
 }
+static random(lower,upper){
+	return parseInt(Math.random()*(upper+1-lower)+lower);
+}
 static  normalize(vec) {
 	if(Maths.equals(vec,new Vector(0,0))){
 		return vec.copy();
@@ -1452,7 +1455,7 @@ class object {
     this.game = game;
     this.game.roads.push(this);
     this.Points = Points;
-    this.width = 90;
+    this.width = 100;
 	this.id = randomID();
 	if(Points.length == 1){
 	this.Points =[this.Points[0].copy(),new Point(0,0)]
@@ -1869,7 +1872,7 @@ class roadManager{
 		road.leftL.clearInters();
 		road.rightL.clearInters();
 		
-		var  i = new intersection()
+		var  i = new intersection({begRoad:[begRoad.lE,begRoad.rB],road:[road.lE,road.rB],endRoad:[endRoad.rE,endRoad.lB]})
 		
 		lE.delete();
 		rE.delete();
@@ -1902,7 +1905,7 @@ class sNode{
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
-		this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
+		this.render = new object(this.game,this.absPos,"RECT",[43,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
 		
 		this.line = line;
 		if(this.type == "beg"){
@@ -1927,7 +1930,7 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
-			this.render = new object(this.game,this.absPos,"RECT",[13,13],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
+			this.render = new object(this.game,this.absPos,"RECT",[43,13],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
 			this.line.render.addSubObject(this.render);
 			if(this.type == "beg"){
 				this.line.bNode = this;
@@ -1941,7 +1944,6 @@ class sNode{
 		}
 		this.render.setAbsPos(this.absPos);
 		this.render.angle = this.line.vector.getAngle();
-		this.render.id = this.type+"Node";
 	}
 	delete(){
 		this.render.delete();
@@ -1952,7 +1954,21 @@ class intersection{
 	constructor(rNs){
 		this.rNs = rNs;
 		this.roads  = Object.keys(this.rNs);
-		this.nodes = Objects.values(this.rNs);
+		this.nodes = Object.values(this.rNs);
+		this.nodes = [].concat.apply([],this.nodes);
+		for(var x = 0; x<this.nodes.length;x++){
+			var node = this.nodes[x];
+			if(node.type == "end"){
+				for(var y =0;y<this.nodes.length;y++){
+					if(this.nodes[y].type =="beg"&& this.nodes[y].line.road.id!= node.line.road.id){
+						node.connections.push(this.nodes[y]);
+					}
+				}
+			}
+			//this.nodes[x].render.colour = "red";
+		}
+		
+		//this.nodes[0].render.rendering = false;
 		//this.ax1 = [roads[0]]
 		////this.ax2 = [];
 		//for(var x = 1;x<roads.length;x++){
@@ -2235,9 +2251,12 @@ class Game {
 			
 			this.crash = true;
 		}
-         
-		if(!this.crash){
-		this.cars[0].move(new Vector(Maths.cos(this.cars[0].angle),Maths.sin(this.cars[0].angle)).times(100));
+         if(this.crash){
+			 var n = this.cars[0].window.collStates["endNode"][1].connections[Maths.random(0,1)]
+			 this.cars[0].turn(n.absPos.copy(),n.line.vector.getAngle());
+		 }
+		else{
+		this.cars[0].move(new Vector(Maths.cos(this.cars[0].angle),Maths.sin(this.cars[0].angle)).times(1000));
 		}//	if(!this.cars[1].frame.collStates["endNode"][0]){
 		//this.cars[1].move(new Vector(Maths.cos(this.cars[1].angle),Maths.sin(this.cars[1].angle)).times(100));
 		//}

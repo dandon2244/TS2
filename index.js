@@ -175,9 +175,12 @@ class Game {
 			
 			this.crash = true;
 		}
-         
-		if(!this.crash){
-		this.cars[0].move(new Vector(Maths.cos(this.cars[0].angle),Maths.sin(this.cars[0].angle)).times(100));
+         if(this.crash){
+			 var n = this.cars[0].window.collStates["endNode"][1].connections[Maths.random(0,1)]
+			 this.cars[0].turn(n.absPos.copy(),n.line.vector.getAngle());
+		 }
+		else{
+		this.cars[0].move(new Vector(Maths.cos(this.cars[0].angle),Maths.sin(this.cars[0].angle)).times(1000));
 		}//	if(!this.cars[1].frame.collStates["endNode"][0]){
 		//this.cars[1].move(new Vector(Maths.cos(this.cars[1].angle),Maths.sin(this.cars[1].angle)).times(100));
 		//}
