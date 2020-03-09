@@ -47,6 +47,7 @@ function radians(ang) {
   return (Math.PI * ang) / 180;
 }
 var isColliding = function(rect1, rect2) {
+  return false;
   var points1 = rect1.getPoints();
   var points2 = rect2.getPoints();
   var axes = getAxes(rect1);

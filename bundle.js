@@ -26,9 +26,11 @@ class Camera {
   constructor(position, colour, game, scale = 1) {
     this.selected = false;
     this.game = game;
+	this.game.cars.push(this);
     this.mouseOffset = [false, [0, 0]];
     this.position = position;
     this.colour = colour;
+	this.id = randomID();
     this.angle = 0;
     this.speed = 1;
     this.gamePos = position;
@@ -566,6 +568,7 @@ function radians(ang) {
   return (Math.PI * ang) / 180;
 }
 var isColliding = function(rect1, rect2) {
+  return false;
   var points1 = rect1.getPoints();
   var points2 = rect2.getPoints();
   var axes = getAxes(rect1);
@@ -840,9 +843,12 @@ class Map {
   constructor(game) {
     this.game = game;
     this.size = 500;
-    this.xValues = this.game.objects.map(o => o.getPoints().map(p => p.x));
+     var colliders = this.game.objects.filter(function(obj) {
+      return obj.collider;
+    });
+    this.xValues = colliders.map(o => o.getPoints().map(p => p.x));
     this.xValues = [].concat.apply([], this.xValues);
-    this.yValues = this.game.objects.map(o => o.getPoints().map(p => p.y));
+    this.yValues = colliders.map(o => o.getPoints().map(p => p.y));
     this.yValues = [].concat.apply([], this.yValues);
     this.hX = Math.max.apply(null, this.xValues);
     this.lX = Math.min.apply(null, this.xValues);
@@ -928,7 +934,7 @@ class Map {
         }
       }
     }
-    obj.blocks = Array.from(new Set(obj.blocks));
+
     for (var b = 0; b < obj.blocks.length; b++) {
       obj.blocks[b].objects.push(obj);
     }
@@ -1044,6 +1050,7 @@ class object {
     this.relPos = relPos.copy();
     this.absPos = this.relPos.copy();
     this.type = type;
+	this.ID = randomID();
 	if(this.colour =="random"){
 		this.colour = randomCol();
 	}
@@ -1249,6 +1256,11 @@ class object {
 	}
 	this.game.context.restore();
     this.game.context.globalAlpha = 1;
+  }
+  onScreen(){
+	  var maxD;
+	  if(this.type)
+		  return;
   }
   colliding(other) {
     var b = isColliding(this, other);
@@ -1902,10 +1914,11 @@ class node{
 class sNode{
 	constructor(game,pos,type,line){
 		this.game = game;
+		this.game.nodes.push(this);
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
-		this.render = new object(this.game,this.absPos,"RECT",[43,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
+		this.render = new object(this.game,this.absPos,"RECT",[20,20],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
 		
 		this.line = line;
 		if(this.type == "beg"){
@@ -1930,7 +1943,7 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
-			this.render = new object(this.game,this.absPos,"RECT",[43,13],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
+			this.render = new object(this.game,this.absPos,"RECT",[20,20],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
 			this.line.render.addSubObject(this.render);
 			if(this.type == "beg"){
 				this.line.bNode = this;
@@ -1947,6 +1960,7 @@ class sNode{
 	}
 	delete(){
 		this.render.delete();
+		removeFromArray(this,this.game.nodes)
 	}
 }
 
@@ -2092,6 +2106,7 @@ class Game {
     this.cTime = 0;
     this.lastTime = 0;
     this.lastSec = 0;
+	this.timers = [];
     this.dt = 0;
     this.DT = 0;
     this.objects = [];
@@ -2100,7 +2115,11 @@ class Game {
     this.running = false;
     this.keyName = "";
     this.selected = null;
-    this.cars = [new Car(new Point(0, 0, 1), "purple", this)];
+	this.nodes = []
+    this.cars = [];
+	for(var x =0;x<100;x++){
+		new Car(new Point(0, 0, 1), "purple", this);
+	}
 	//this.cars[0].delete();
     var x = 0;
 	
@@ -2166,6 +2185,32 @@ class Game {
     });
 
     this.keyFunctions = Input.genKeyFunctions();
+	var m = function(){
+		_this.millUpdate();
+		_this.timeF(100,m);
+	}
+	this.timeF(1000,m);
+	var s = function(){
+			_this.secondUpdate();
+			_this.timeF(1000,s);
+		}
+	this.timeF(1000,s);
+	
+	var spawn = function(){
+		if(!_this.running){
+			
+		}
+		else if(_this.roads.length >0){
+			    var car = new Car(new Point(0, 0, 1), "purple", _this);
+				var r = _this.roads[parseInt(Math.random() *_this.roads.length)]
+				r.mRoad.rendering = false;
+				car.move(r.lB.absPos.minus(car.position),false);
+				car.rotate(r.lB.line.vector.getAngle()-car.angle,false);
+		}
+		_this.timeF(100,spawn)
+	}
+	spawn();
+	
   }
   keyDown(e) {
     this.keyName = keyCodes[e.keyCode];
@@ -2187,7 +2232,9 @@ class Game {
       this.road = null;
     }
   }
-
+  timeF(t,f){
+	  this.timers.push([f,t,performance.now()])
+  }
   updateDt() {
     this.frames++;
     this.cTime = performance.now();
@@ -2196,15 +2243,19 @@ class Game {
     this.lastTime = this.cTime;
     if (this.lastSec == 0) {
       this.lastSec = this.cTime;
+	  this.lastMill = this.cTime
     }
-    if (this.cTime - this.lastSec > 1000) {
-      this.secondUpdate();
-      this.lastSec = this.cTime;
-      this.frames = 0;
-    }
+
+  }
+  millUpdate(){
+	  if(!this.m)this.m = 0;
+	  this.m++;
+	  this.map.update();
+	  
   }
   secondUpdate() {
-		//console.log(this.frames);
+		console.log(this.frames,this.cars.length)
+		this.frames = 0;
   }
 
   changeMouseMode(type) {
@@ -2213,16 +2264,11 @@ class Game {
   }
 
   update(timestamp) {
-	
-    this.cur = Math.random();
-  
-    if (this.close > this.cur) {
-      this.close = this.cur;
-    }
+
     this.objects.sort(function(a, b) {
       return a.absPos.z - b.absPos.z;
     });
-    this.map.update();
+    //
 	if(this.road){
 		this.road.updateAttributes(this.camera.screenToGamePos(this.mousePos));
 	}
@@ -2231,6 +2277,13 @@ class Game {
       this.camera.position.z = 0.15;
     }
     this.updateDt();
+	for(var x =0;x<this.timers.length;x++){
+		var tim = this.timers[x];
+		if(this.cTime-tim[2]>=tim[1]){
+			tim[0]();
+			this.timers.splice(x,1);
+		}
+	}
     g.context.fillStyle = "#fcf2d2";
     g.context.fillRect(0, 0, g.canvas.width, g.canvas.height);
     if (this.running) {
@@ -2239,12 +2292,7 @@ class Game {
 		if(!this.spawn){
 			this.crash =  false;
 			this.spawn = true;
-			if(this.roads.length >0){
-				var r = this.roads[parseInt(Math.random() *this.roads.length)]
-				r.mRoad.rendering = false;
-				this.cars[0].move(r.lB.absPos.minus(this.cars[0].position),false);
-				this.cars[0].rotate(r.lB.line.vector.getAngle()-this.cars[0].angle,false);
-			}
+			
 		}
 		
 		if(this.cars[0].window.collStates["endNode"][0]){
@@ -2252,18 +2300,22 @@ class Game {
 			this.crash = true;
 		}
          if(this.crash){
-			 var n = this.cars[0].window.collStates["endNode"][1].connections[Maths.random(0,1)]
-			 this.cars[0].turn(n.absPos.copy(),n.line.vector.getAngle());
+			var n = this.cars[0].window.collStates["endNode"][1]
+			for(var x = 0;x<this.nodes.length;x++){
+				if(this.nodes[x].render.ID == n.ID){
+					//console.log(this.nodes[x])
+					n = this.nodes[x].connections[0];
+					//console.log(this.nodes[x]);
+					break;
+				}
+			}
+			//console.log(n);
+			if(n) this.cars[0].turn(n.absPos.copy(),n.line.vector.getAngle());
+			 this.crash = false;
 		 }
-		else{
-		this.cars[0].move(new Vector(Maths.cos(this.cars[0].angle),Maths.sin(this.cars[0].angle)).times(1000));
-		}//	if(!this.cars[1].frame.collStates["endNode"][0]){
-		//this.cars[1].move(new Vector(Maths.cos(this.cars[1].angle),Maths.sin(this.cars[1].angle)).times(100));
-		//}
+		
       for (var i = 0; i < this.cars.length; i++) {
-       // this.cars[i].run();
-	 
-	   //this.cars[i].rotate(90);
+       this.cars[i].move(new Vector(Maths.cos(this.cars[i].angle),Maths.sin(this.cars[i].angle)).times(100));
       }
     }
      //this.line.square.absPos = this.line.centre.copy();

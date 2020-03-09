@@ -2,9 +2,12 @@ class Map {
   constructor(game) {
     this.game = game;
     this.size = 500;
-    this.xValues = this.game.objects.map(o => o.getPoints().map(p => p.x));
+     var colliders = this.game.objects.filter(function(obj) {
+      return obj.collider;
+    });
+    this.xValues = colliders.map(o => o.getPoints().map(p => p.x));
     this.xValues = [].concat.apply([], this.xValues);
-    this.yValues = this.game.objects.map(o => o.getPoints().map(p => p.y));
+    this.yValues = colliders.map(o => o.getPoints().map(p => p.y));
     this.yValues = [].concat.apply([], this.yValues);
     this.hX = Math.max.apply(null, this.xValues);
     this.lX = Math.min.apply(null, this.xValues);
@@ -90,7 +93,7 @@ class Map {
         }
       }
     }
-    obj.blocks = Array.from(new Set(obj.blocks));
+
     for (var b = 0; b < obj.blocks.length; b++) {
       obj.blocks[b].objects.push(obj);
     }

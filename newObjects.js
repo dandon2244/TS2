@@ -213,6 +213,11 @@ class object {
 	this.game.context.restore();
     this.game.context.globalAlpha = 1;
   }
+  onScreen(){
+	  var maxD;
+	  if(this.type)
+		  return;
+  }
   colliding(other) {
     var b = isColliding(this, other);
     

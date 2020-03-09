@@ -215,10 +215,11 @@ class node{
 class sNode{
 	constructor(game,pos,type,line){
 		this.game = game;
+		this.game.nodes.push(this);
 		this.absPos = pos.copy();
 		this.angle = 0;
 		this.type = type;
-		this.render = new object(this.game,this.absPos,"RECT",[43,13],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
+		this.render = new object(this.game,this.absPos,"RECT",[20,20],(this.type == "beg")?"green":"purple",this.type=="beg"?"begNode":"endNode",true);
 		
 		this.line = line;
 		if(this.type == "beg"){
@@ -243,7 +244,7 @@ class sNode{
 				this.line.delete()
 			}
 			this.line = line;
-			this.render = new object(this.game,this.absPos,"RECT",[43,13],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
+			this.render = new object(this.game,this.absPos,"RECT",[20,20],(this.type == "beg"?"green":"purple"),this.type=="beg"?"begNode":"endNode",true);
 			this.line.render.addSubObject(this.render);
 			if(this.type == "beg"){
 				this.line.bNode = this;
@@ -260,6 +261,7 @@ class sNode{
 	}
 	delete(){
 		this.render.delete();
+		removeFromArray(this,this.game.nodes)
 	}
 }
 

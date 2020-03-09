@@ -2,9 +2,11 @@
   constructor(position, colour, game, scale = 1) {
     this.selected = false;
     this.game = game;
+	this.game.cars.push(this);
     this.mouseOffset = [false, [0, 0]];
     this.position = position;
     this.colour = colour;
+	this.id = randomID();
     this.angle = 0;
     this.speed = 1;
     this.gamePos = position;
