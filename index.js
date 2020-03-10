@@ -117,8 +117,9 @@ class Game {
 				r.mRoad.rendering = false;
 				car.move(r.lB.absPos.minus(car.position),false);
 				car.rotate(r.lB.line.vector.getAngle()-car.angle,false);
+				car.crash = false;
 		}
-		_this.timeF(100,spawn)
+		_this.timeF(2000,spawn)
 	}
 	spawn();
 	
@@ -165,7 +166,7 @@ class Game {
 	  
   }
   secondUpdate() {
-		console.log(this.frames,this.cars.length)
+		//console.log(this.frames,this.cars.length)
 		this.frames = 0;
   }
 
@@ -198,34 +199,36 @@ class Game {
     g.context.fillStyle = "#fcf2d2";
     g.context.fillRect(0, 0, g.canvas.width, g.canvas.height);
     if (this.running) {
-		//this.cars[0].turn(this.p2.absPos,0);
 		
-		if(!this.spawn){
-			this.crash =  false;
-			this.spawn = true;
-			
+	for(var x =0;x<this.cars.length;x++){
+		var car = this.cars[x];
+		//console.log("H");
+		if(car.window.collStates["endNode"][0]){	
+			car.crash = true;
 		}
-		
-		if(this.cars[0].window.collStates["endNode"][0]){
-			
-			this.crash = true;
-		}
-         if(this.crash){
-			var n = this.cars[0].window.collStates["endNode"][1]
+         if(car.crash){
+			var n = car.window.collStates["endNode"][1]
+			//console.log(n);
+		 if(n){
 			for(var x = 0;x<this.nodes.length;x++){
 				if(this.nodes[x].render.ID == n.ID){
-					//console.log(this.nodes[x])
-					n = this.nodes[x].connections[0];
-					//console.log(this.nodes[x]);
-					break;
+				//	console.log(n.ID);
+					var y = this.nodes[x].connections[0];
+					if(!y){
+						car.delete();
+					}
+					console.log(this.nodes.length);
 				}
 			}
-			//console.log(n);
-			if(n) this.cars[0].turn(n.absPos.copy(),n.line.vector.getAngle());
-			 this.crash = false;
+				if(y) car.turn(y.absPos.copy(),y.line.vector.getAngle());
+					car.crash = false;
+		
 		 }
+		 }
+	}
 		
       for (var i = 0; i < this.cars.length; i++) {
+		
        this.cars[i].move(new Vector(Maths.cos(this.cars[i].angle),Maths.sin(this.cars[i].angle)).times(100));
       }
     }

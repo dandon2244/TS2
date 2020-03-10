@@ -109,7 +109,8 @@ static processMouse(game, point) {
 		var cur;
 		for(var x =0;x<cars.length;x++){
 			for(var n = 0;n<game.objects.length;n++){
-				if(game.objects[n].id = cars[x].frame.id){
+				if(game.objects[n].ID == cars[x].frame.ID){
+					console.log(n,x);
 					var p = n;
 				}
 			}

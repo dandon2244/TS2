@@ -38,14 +38,14 @@
     );
     this.leftHead = new object(
       game,
-      new Point(-this.frame.size[0] / 2 + 4, -this.frame.size[1] / 2 + 4, 2),
+      new Point(-this.frame.size[0] / 2 + 4, -this.frame.size[1] / 2 + 4, 1),
       "RECT",
       [8, 8],
       "red"
     );
     this.rightHead = new object(
       game,
-      new Point(-this.frame.size[0] / 2 + 4, this.frame.size[1] / 2 - 4, 2),
+      new Point(-this.frame.size[0] / 2 + 4, this.frame.size[1] / 2 - 4, 1),
       "RECT",
       [8, 8],
       "red"
