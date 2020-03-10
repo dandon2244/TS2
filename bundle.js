@@ -491,14 +491,30 @@ static genKeyFunctions() {
 static processMouse(game, point) {
 
   if (game.mouseMode == "auto") {
+	var cars = []
     for (var i = 0; i < game.cars.length; i++) {
       if (game.cars[i].frame.pointWithinRender(point)) {
-        game.cars[i].select(true);
-		game.selected = game.cars[i];
+		cars.push(game.cars[i])
 		game.changeMouseMode("carSelect")
-     
       }
     }
+	if(cars.length > 0){
+		var h = cars[0].frame.absPos.z;
+		var cur;
+		for(var x =0;x<cars.length;x++){
+			for(var n = 0;n<game.objects.length;n++){
+				if(game.objects[n].id = cars[x].frame.id){
+					var p = n;
+				}
+			}
+			if(p>=h){
+				h = p;
+				cur = cars[x];
+			}
+		}
+		game.selected =  cur;
+		game.selected.select(true);
+	}
     
   }
   else if(game.mouseMode == "delete"){
@@ -2117,9 +2133,10 @@ class Game {
     this.selected = null;
 	this.nodes = []
     this.cars = [];
-	for(var x =0;x<100;x++){
+	for(var x =0;x<1;x++){
 		new Car(new Point(0, 0, 1), "purple", this);
 	}
+	new Car(new Point(10,10,2),"c",this);
 	//this.cars[0].delete();
     var x = 0;
 	

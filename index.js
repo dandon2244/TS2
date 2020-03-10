@@ -27,9 +27,10 @@ class Game {
     this.selected = null;
 	this.nodes = []
     this.cars = [];
-	for(var x =0;x<100;x++){
+	for(var x =0;x<1;x++){
 		new Car(new Point(0, 0, 1), "purple", this);
 	}
+	new Car(new Point(10,10,2),"c",this);
 	//this.cars[0].delete();
     var x = 0;
 	
