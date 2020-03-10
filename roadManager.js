@@ -268,8 +268,12 @@ class sNode{
 class intersection{
 	constructor(rNs){
 		this.rNs = rNs;
+		this.id = randomID();
 		this.roads  = Object.keys(this.rNs);
 		this.nodes = Object.values(this.rNs);
+		for(var x =0;x<this.roads.length;x++){
+		   if(this.roads[x].lB
+		}
 		this.nodes = [].concat.apply([],this.nodes);
 		for(var x = 0; x<this.nodes.length;x++){
 			var node = this.nodes[x];
