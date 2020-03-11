@@ -504,7 +504,7 @@ static processMouse(game, point) {
 		for(var x =0;x<cars.length;x++){
 			for(var n = 0;n<game.objects.length;n++){
 				if(game.objects[n].ID == cars[x].frame.ID){
-					console.log(n,x);
+				//	console.log(n,x);
 					var p = n;
 				}
 			}
@@ -531,7 +531,36 @@ static processMouse(game, point) {
 	  game.changeMouseMode("auto");
   }
   else if (game.mouseMode == "roadGreen") {
-    game.roadCreate(game.camera.screenToGamePos(point));
+	  var p = game.camera.screenToGamePos(point);
+	   var P = p.copy()
+	   var ext = false;
+	  if (game.road == null) {
+		for(var x = 0; x<game.intersections.length;x++){
+			var inter = game.intersections[x]
+			if(inter.render.pointWithinRender(point)){
+				P = inter.render.absPos.copy();
+				ext = true;
+				var vec;
+				if(inter.ax1.length ==1){
+					vec = inter.ax1[0].line.vector.copy();
+				}
+				else{
+					vec = inter.ax2[0].line.vector.copy();
+				}
+			}
+		}
+	 
+
+      game.road = new Road(game, [P]);
+	  game.road.ext = ext;
+	  
+	  if(ext){
+		  game.road.tVec = vec;
+	  }
+    } else {
+      game.road.changePoint(p);
+      game.road = null;
+    }
   }
 }
 }
@@ -608,7 +637,7 @@ var isColliding = function(rect1, rect2) {
 var randomID = function(){
 	var c;
 	var s = "";
-	for(var x = 0; x<20;x++){
+	for(var x = 0; x<6;x++){
 		c = parseInt(Math.random()*36);
 		if(c<26){
 			c = String.fromCharCode(65+c)
@@ -1573,7 +1602,11 @@ this.lineStuff();
   updateAttributes(pos) {
 	//console.log(pos);
 	this.Points[1] = pos.copy();
-	//console.log(pos.toString());
+	if(this.ext){
+		var l = new Line(this.game,this.Points[0],this.tVec,null);
+		this.Points[1] = projectOntoLine(this.Points[1],l);
+		l.delete();
+	}
     
     var dx = this.Points[1].x - this.Points[0].x;
     var dy = this.Points[1].y - this.Points[0].y;
@@ -1983,8 +2016,16 @@ class sNode{
 class intersection{
 	constructor(rNs){
 		this.rNs = rNs;
+		this.id = randomID();
 		this.roads  = Object.keys(this.rNs);
 		this.nodes = Object.values(this.rNs);
+		this.aRoads = this.nodes.map(n=> n[0].line.road);
+		this.game = this.nodes[0][0].game;
+		this.game.intersections.push(this);
+		for(var x =0;x<this.roads.length;x++){
+		   if(this.roads[x].lB){
+		   }
+		}
 		this.nodes = [].concat.apply([],this.nodes);
 		for(var x = 0; x<this.nodes.length;x++){
 			var node = this.nodes[x];
@@ -1995,20 +2036,28 @@ class intersection{
 					}
 				}
 			}
-			//this.nodes[x].render.colour = "red";
 		}
 		
 		//this.nodes[0].render.rendering = false;
-		//this.ax1 = [roads[0]]
-		////this.ax2 = [];
-		//for(var x = 1;x<roads.length;x++){
-		//	if(roads[x].line.vector.parallel(roads[0].line.vector)){	
-		//		this.ax1.push(roads[x]);
-		//	}
-		//	else{
-		//		this.ax2.push(roads[x]);
-		//	}
-		//}
+		this.roads=this.aRoads;
+		this.ax1 = [this.roads[0]]
+		this.ax2 = [];
+		for(var x = 1;x<this.roads.length;x++){
+
+			if(this.roads[x].line.vector.parallel(this.roads[0].line.vector)){	
+				this.ax1.push(this.roads[x]);
+			}
+			else{
+				this.ax2.push(this.roads[x]);
+			}
+		}
+		var l = this.ax1[0].line.extend();
+		var l2 = this.ax2[0].line.extend();
+		var pos = l.intersect(l2);
+		this.render = new object(this.nodes[0].game,pos,"RECT",[40,40],"purple");
+		l.delete();
+		l2.delete();
+		
 		/*for(var x = 0;x<this.ax1.length;x++){
 			this.ax1[x].leftL.render.colour = "red";
 		}
@@ -2112,7 +2161,7 @@ class Game {
     this.collisionPairs = { window:["endNode","begNode"],frame: ["frame","road","endNode","begNode"], hitbox: ["frame"],road:["road"],begNode:["frame"],endNode:["frame"] };
     this.mousePos = new Point(0, 0);
     this.canvas = document.getElementById("gameCanvas");
-    
+    this.intersections = []
     this.context = this.canvas.getContext("2d");
     this.camera = new Camera(new Point(0.0, 0.0, 1), this);
     this.roads = [];
@@ -2240,16 +2289,6 @@ class Game {
     }
     this.keys[e.keyCode] = true;
   }
-
-  roadCreate(point) {
-    if (this.road == null) {
-	  var P = point.copy();
-      this.road = new Road(this, [P]);
-    } else {
-      this.road.changePoint(point);
-      this.road = null;
-    }
-  }
   timeF(t,f){
 	  this.timers.push([f,t,performance.now()])
   }
@@ -2319,7 +2358,7 @@ class Game {
 			for(var x = 0;x<this.nodes.length;x++){
 				if(this.nodes[x].render.ID == n.ID){
 				//	console.log(n.ID);
-					var y = this.nodes[x].connections[0];
+					var y = this.nodes[x].connections[parseInt(Math.random()*this.nodes[x].connections.length)];
 					if(!y){
 						car.delete();
 					}

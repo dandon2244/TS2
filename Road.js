@@ -93,7 +93,11 @@ this.lineStuff();
   updateAttributes(pos) {
 	//console.log(pos);
 	this.Points[1] = pos.copy();
-	//console.log(pos.toString());
+	if(this.ext){
+		var l = new Line(this.game,this.Points[0],this.tVec,null);
+		this.Points[1] = projectOntoLine(this.Points[1],l);
+		l.delete();
+	}
     
     var dx = this.Points[1].x - this.Points[0].x;
     var dy = this.Points[1].y - this.Points[0].y;

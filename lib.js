@@ -70,7 +70,7 @@ var isColliding = function(rect1, rect2) {
 var randomID = function(){
 	var c;
 	var s = "";
-	for(var x = 0; x<20;x++){
+	for(var x = 0; x<6;x++){
 		c = parseInt(Math.random()*36);
 		if(c<26){
 			c = String.fromCharCode(65+c)

@@ -6,7 +6,7 @@ class Game {
     this.collisionPairs = { window:["endNode","begNode"],frame: ["frame","road","endNode","begNode"], hitbox: ["frame"],road:["road"],begNode:["frame"],endNode:["frame"] };
     this.mousePos = new Point(0, 0);
     this.canvas = document.getElementById("gameCanvas");
-    
+    this.intersections = []
     this.context = this.canvas.getContext("2d");
     this.camera = new Camera(new Point(0.0, 0.0, 1), this);
     this.roads = [];
@@ -134,16 +134,6 @@ class Game {
     }
     this.keys[e.keyCode] = true;
   }
-
-  roadCreate(point) {
-    if (this.road == null) {
-	  var P = point.copy();
-      this.road = new Road(this, [P]);
-    } else {
-      this.road.changePoint(point);
-      this.road = null;
-    }
-  }
   timeF(t,f){
 	  this.timers.push([f,t,performance.now()])
   }
@@ -213,7 +203,7 @@ class Game {
 			for(var x = 0;x<this.nodes.length;x++){
 				if(this.nodes[x].render.ID == n.ID){
 				//	console.log(n.ID);
-					var y = this.nodes[x].connections[0];
+					var y = this.nodes[x].connections[parseInt(Math.random()*this.nodes[x].connections.length)];
 					if(!y){
 						car.delete();
 					}

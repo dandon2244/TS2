@@ -110,7 +110,7 @@ static processMouse(game, point) {
 		for(var x =0;x<cars.length;x++){
 			for(var n = 0;n<game.objects.length;n++){
 				if(game.objects[n].ID == cars[x].frame.ID){
-					console.log(n,x);
+				//	console.log(n,x);
 					var p = n;
 				}
 			}
@@ -137,7 +137,36 @@ static processMouse(game, point) {
 	  game.changeMouseMode("auto");
   }
   else if (game.mouseMode == "roadGreen") {
-    game.roadCreate(game.camera.screenToGamePos(point));
+	  var p = game.camera.screenToGamePos(point);
+	   var P = p.copy()
+	   var ext = false;
+	  if (game.road == null) {
+		for(var x = 0; x<game.intersections.length;x++){
+			var inter = game.intersections[x]
+			if(inter.render.pointWithinRender(point)){
+				P = inter.render.absPos.copy();
+				ext = true;
+				var vec;
+				if(inter.ax1.length ==1){
+					vec = inter.ax1[0].line.vector.copy();
+				}
+				else{
+					vec = inter.ax2[0].line.vector.copy();
+				}
+			}
+		}
+	 
+
+      game.road = new Road(game, [P]);
+	  game.road.ext = ext;
+	  
+	  if(ext){
+		  game.road.tVec = vec;
+	  }
+    } else {
+      game.road.changePoint(p);
+      game.road = null;
+    }
   }
 }
 }

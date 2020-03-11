@@ -271,8 +271,12 @@ class intersection{
 		this.id = randomID();
 		this.roads  = Object.keys(this.rNs);
 		this.nodes = Object.values(this.rNs);
+		this.aRoads = this.nodes.map(n=> n[0].line.road);
+		this.game = this.nodes[0][0].game;
+		this.game.intersections.push(this);
 		for(var x =0;x<this.roads.length;x++){
-		   if(this.roads[x].lB
+		   if(this.roads[x].lB){
+		   }
 		}
 		this.nodes = [].concat.apply([],this.nodes);
 		for(var x = 0; x<this.nodes.length;x++){
@@ -284,20 +288,28 @@ class intersection{
 					}
 				}
 			}
-			//this.nodes[x].render.colour = "red";
 		}
 		
 		//this.nodes[0].render.rendering = false;
-		//this.ax1 = [roads[0]]
-		////this.ax2 = [];
-		//for(var x = 1;x<roads.length;x++){
-		//	if(roads[x].line.vector.parallel(roads[0].line.vector)){	
-		//		this.ax1.push(roads[x]);
-		//	}
-		//	else{
-		//		this.ax2.push(roads[x]);
-		//	}
-		//}
+		this.roads=this.aRoads;
+		this.ax1 = [this.roads[0]]
+		this.ax2 = [];
+		for(var x = 1;x<this.roads.length;x++){
+
+			if(this.roads[x].line.vector.parallel(this.roads[0].line.vector)){	
+				this.ax1.push(this.roads[x]);
+			}
+			else{
+				this.ax2.push(this.roads[x]);
+			}
+		}
+		var l = this.ax1[0].line.extend();
+		var l2 = this.ax2[0].line.extend();
+		var pos = l.intersect(l2);
+		this.render = new object(this.nodes[0].game,pos,"RECT",[40,40],"purple");
+		l.delete();
+		l2.delete();
+		
 		/*for(var x = 0;x<this.ax1.length;x++){
 			this.ax1[x].leftL.render.colour = "red";
 		}
