@@ -547,6 +547,8 @@ static processMouse(game, point) {
 				else{
 					vec = inter.ax2[0].line.vector.copy();
 				}
+				console.log(inter.ax2[0].line.intersect(inter.ax1[0].lineL.extend()))
+					//inter.ax1[0].line.intersect(inter.ax2[1].line)
 			}
 		}
 	 
