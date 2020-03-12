@@ -152,15 +152,50 @@ static processMouse(game, point) {
 				}
 				else{
 					vec = inter.ax2[0].line.vector.copy();
+					var exLine;
+					var lE = inter.ax1[0].lineL.extend();
+					var rE = inter.ax1[0].lineR.extend();
+					if(inter.ax2[0].line.intersect(lE)){
+						exLine = rE;
+					}
+					else{
+					exLine = lE;
+					}
+					inter.ax2[0].line.clearInters();
+					var l = inter.ax2[0].lineL.extend();
+					var r = inter.ax2[0].lineR.extend();
+					var lI = l.intersect(exLine);
+					var rI = r.intersect(exLine);
+					lE.delete();
+					rE.delete();
+					var temp = new Road(game,[P,P.add(vec.times(800))]);
+					var l2 = temp.lB.absPos.distanceBetween(lI);
+					var r2 = temp.rE.absPos.distanceBetween(rI);
+					temp.delete();
+				
+					if(l2 <r2){
+						var eP = lI;
+					}
+					else{
+						var eP = rI;
+					}
+					
+					lE =inter.ax2[0].line.extend();
+					P = projectOntoLine(eP,lE);
+					lE.delete();
+					l.delete();
+					r.delete();
+					game.road = new Road(game,[P]);
+					
 				}
-				console.log(inter.ax2[0].line.intersect(inter.ax1[0].lineL.extend()))
-					//inter.ax1[0].line.intersect(inter.ax2[1].line)
 			}
 		}
 	 
-
+	  if(!ext){
       game.road = new Road(game, [P]);
+	  }
 	  game.road.ext = ext;
+	 
 	  
 	  if(ext){
 		  game.road.tVec = vec;

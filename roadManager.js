@@ -21,10 +21,13 @@ class roadManager{
 		}
 		var lE = road1.lineL.extend();
 		var rE = road1.lineR.extend();
+		//lE.extend();
+		//rE.extend();
 		road1.mRoad.addSubObject(lE.render);
 		road1.mRoad.addSubObject(rE.render);
 		var lI = lE.intersect(incomeR)
 		var rI = rE.intersect(incomeR)
+		incomeR.render.colour = "red";
 
 		var lengths = [road1.lineL.begPoint.distanceBetween(lI.copy()),road1.lineR.begPoint.distanceBetween(rI.copy())]
 		var length = Math.max(lengths[0],lengths[1]);
@@ -141,14 +144,19 @@ class roadManager{
 		var endRoad = others[1]
 		var lE = begRoad.lineL.extend();
 		var rE = begRoad.lineR.extend();
-		if(lE.intersect(road.line) ==null){
+		var i =road.line.intersect(lE)
+		console.log(road.line.pointOnLine(i));
+		road.line.extend();
+		new object(road.game,i,"CIRCLE",[10],"black");
+		if(road.line.intersect(lE) ==null){
 			var incomeR = rE;
 		}
 		else{
 			var incomeR = lE;
 		}
-		lE.clearInters();
-		incomeR.render.colour = "green";
+		road.line.clearInters();
+		var i = incomeR.extend();
+	i.render.colour = "green";
 		
 		road.lE.absPos = road.leftL.intersect(incomeR);
 		road.rB.absPos = road.rightL.intersect(incomeR);

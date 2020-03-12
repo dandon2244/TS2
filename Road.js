@@ -106,8 +106,13 @@ this.lineStuff();
 	
 	if(this.angle>87&&this.angle <93){
 		var temp = this.angle;
-		this.angle = 90.1;
-		this.Points[1] = rotatePoint(90.1-temp,this.Points[0],this.Points[1]);
+		this.angle = 90;
+		this.Points[1] = rotatePoint(90-temp,this.Points[0],this.Points[1]);
+	}
+	if(this.angle<-87&&this.angle >-93){
+		var temp = this.angle;
+		this.angle = -90;
+		this.Points[1] = rotatePoint(-90-temp,this.Points[0],this.Points[1]);
 	}
     
 		this.length =

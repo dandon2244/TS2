@@ -189,6 +189,7 @@ class Line {
 			var lam = (p.y-this.centre.y)/this.vector.y
 			var oX = this.centre.x+lam*this.vector.x;
 			if(Maths.round(oX,5)== Maths.round(p.x,5)){
+				console.log("YOOO");
 				return true;
 			}
 			else{
