@@ -190,11 +190,14 @@ this.lineStuff();
 					if(this.exempts[y].id == road.id){
 					
 						var b = true;
+					//	console.log("NOPE")
 						continue;
 					}
 				}
 			}
 			if(b){
+				this.line.clearInters();
+				//console.log("OH");
 				continue;
 			}
 			
@@ -211,10 +214,7 @@ this.lineStuff();
 			
 	}
 	}
-//	console.log(inters.length);
-	//this.line.clearInters();
 	if(inters.length>1){
-		//this.delete()
 		return false;
 	}
 	if(inters.length == 1){

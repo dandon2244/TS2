@@ -189,7 +189,6 @@ static processMouse(game, point) {
 					game.road.tVec = vec;
 					game.road.ext = true;
 					game.road.exempts = inter.roads;
-					
 				}
 			}
 		}
@@ -200,7 +199,13 @@ static processMouse(game, point) {
 	
     } else {
       if(game.road.changePoint(p)){
+		if(game.road.ext){
+		  game.road.lB.render.colour = "blue";
+		  console.log("HERE");
+	  }
       game.road = null;
+	 
+	  console.log("YO");
 	  }
 	  else{
 		  game.road.sR.rendering = true;

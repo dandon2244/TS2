@@ -6,6 +6,7 @@ class roadManager{
 		nLine.delete();
 		if(lengths[0] == null){
 			var incomeR = inters[0].lineR;
+			console.log("YO");
 		}
 		else if(lengths[1] == null){
 		var incomeR = inters[0].lineL;
@@ -21,8 +22,7 @@ class roadManager{
 		}
 		var lE = road1.lineL.extend();
 		var rE = road1.lineR.extend();
-		//lE.extend();
-		//rE.extend();
+		
 		road1.mRoad.addSubObject(lE.render);
 		road1.mRoad.addSubObject(rE.render);
 		var lI = lE.intersect(incomeR)

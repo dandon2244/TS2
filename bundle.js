@@ -583,7 +583,6 @@ static processMouse(game, point) {
 					game.road.tVec = vec;
 					game.road.ext = true;
 					game.road.exempts = inter.roads;
-					
 				}
 			}
 		}
@@ -594,7 +593,13 @@ static processMouse(game, point) {
 	
     } else {
       if(game.road.changePoint(p)){
+		if(game.road.ext){
+		  game.road.lB.render.colour = "blue";
+		  console.log("HERE");
+	  }
       game.road = null;
+	 
+	  console.log("YO");
 	  }
 	  else{
 		  game.road.sR.rendering = true;
@@ -1757,11 +1762,14 @@ this.lineStuff();
 					if(this.exempts[y].id == road.id){
 					
 						var b = true;
+					//	console.log("NOPE")
 						continue;
 					}
 				}
 			}
 			if(b){
+				this.line.clearInters();
+				//console.log("OH");
 				continue;
 			}
 			
@@ -1778,10 +1786,7 @@ this.lineStuff();
 			
 	}
 	}
-//	console.log(inters.length);
-	//this.line.clearInters();
 	if(inters.length>1){
-		//this.delete()
 		return false;
 	}
 	if(inters.length == 1){
@@ -1841,6 +1846,7 @@ class roadManager{
 		nLine.delete();
 		if(lengths[0] == null){
 			var incomeR = inters[0].lineR;
+			console.log("YO");
 		}
 		else if(lengths[1] == null){
 		var incomeR = inters[0].lineL;
@@ -1856,8 +1862,7 @@ class roadManager{
 		}
 		var lE = road1.lineL.extend();
 		var rE = road1.lineR.extend();
-		//lE.extend();
-		//rE.extend();
+		
 		road1.mRoad.addSubObject(lE.render);
 		road1.mRoad.addSubObject(rE.render);
 		var lI = lE.intersect(incomeR)
