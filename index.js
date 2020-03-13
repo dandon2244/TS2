@@ -27,6 +27,13 @@ class Game {
     this.selected = null;
 	this.nodes = []
     this.cars = [];
+	this.l = new Line(this,[new Point(-100,0,3),new Point(100,0,3)]);
+	this.l2 = new Line(this,[new Point(0,100,3),new Point(0,0,3)]);
+	this.l2.intersect(this.l);
+	//this.l2 = new Line(this,new Point(0,100,3),new Vector(0,-1),1000);
+	//this.l2.vector = this.l2.vector.rotate(-90-this.l2.vector.getAngle());
+	//this.l2.update();
+	//this.l2.intersect(this.l);
 	for(var x =0;x<1;x++){
 		new Car(new Point(0, 0, 1), "purple", this);
 	}

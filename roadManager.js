@@ -145,9 +145,10 @@ class roadManager{
 		var lE = begRoad.lineL.extend();
 		var rE = begRoad.lineR.extend();
 		var i =road.line.intersect(lE)
-		console.log(road.line.pointOnLine(i));
-		road.line.extend();
-		new object(road.game,i,"CIRCLE",[10],"black");
+		lE.extend();
+	//	console.log(road.line.pointOnLine(i));
+	//	road.line.extend();
+		//new object(road.game,i,"CIRCLE",[10],"black");
 		if(road.line.intersect(lE) ==null){
 			var incomeR = rE;
 		}
@@ -155,8 +156,8 @@ class roadManager{
 			var incomeR = lE;
 		}
 		road.line.clearInters();
-		var i = incomeR.extend();
-	i.render.colour = "green";
+		//var i = incomeR.extend();
+		//i.render.colour = "green";
 		
 		road.lE.absPos = road.leftL.intersect(incomeR);
 		road.rB.absPos = road.rightL.intersect(incomeR);

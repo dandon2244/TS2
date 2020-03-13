@@ -186,7 +186,19 @@ class Line {
 		  } 
 		  
 		  else{
-			var lam = (p.y-this.centre.y)/this.vector.y
+			if(Maths.equals(p.x,this.centre.x)){
+				if(this.length == null){
+					return true;
+				}
+				var dis = (p.y-this.begPoint.y)/this.vector.y
+				if((dis < this.length||Maths.equals(dis,this.length))&&(dis>0||Maths.equals(dis,0))){
+					return true;
+				}
+		
+			}
+			
+			return  false;
+			/*var lam = (p.y-this.centre.y)/this.vector.y
 			var oX = this.centre.x+lam*this.vector.x;
 			if(Maths.round(oX,5)== Maths.round(p.x,5)){
 				console.log("YOOO");
@@ -194,7 +206,7 @@ class Line {
 			}
 			else{
 				return false;
-			}
+			}*/
 		  }
 	  }
 	  else{
