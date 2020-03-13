@@ -199,8 +199,15 @@ static processMouse(game, point) {
 	  }
 	
     } else {
-      game.road.changePoint(p);
+      if(game.road.changePoint(p)){
       game.road = null;
+	  }
+	  else{
+		  game.road.sR.rendering = true;
+		  game.timeF(200,function(){
+			  game.road.sR.rendering = false;
+		  });
+	  }
     }
   }
 }

@@ -47,6 +47,9 @@ class object {
 		  this.moveAll(v,false);
 	  
   }
+  setAngle(ang){
+	  this.rotateAll(ang-this.angle,this.absPos,false);
+  }
   firstInit() {
     this.supe = null;
     this.rendering = true;

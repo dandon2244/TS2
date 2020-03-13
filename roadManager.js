@@ -144,11 +144,8 @@ class roadManager{
 		var endRoad = others[1]
 		var lE = begRoad.lineL.extend();
 		var rE = begRoad.lineR.extend();
-		var i =road.line.intersect(lE)
-		lE.extend();
-	//	console.log(road.line.pointOnLine(i));
-	//	road.line.extend();
-		//new object(road.game,i,"CIRCLE",[10],"black");
+	
+	
 		if(road.line.intersect(lE) ==null){
 			var incomeR = rE;
 		}
