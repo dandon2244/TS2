@@ -580,6 +580,9 @@ static processMouse(game, point) {
 					l.delete();
 					r.delete();
 					game.road = new Road(game,[P]);
+					game.road.tVec = vec;
+					game.road.ext = true;
+					game.road.exempts = inter.roads;
 					
 				}
 			}
@@ -588,12 +591,7 @@ static processMouse(game, point) {
 	  if(!ext){
       game.road = new Road(game, [P]);
 	  }
-	  game.road.ext = ext;
-	 
-	  
-	  if(ext){
-		  game.road.tVec = vec;
-	  }
+	
     } else {
       game.road.changePoint(p);
       game.road = null;
@@ -1734,8 +1732,18 @@ this.lineStuff();
     this.updateAttributes(point);
 	this.lineStuff();
 	var inters = [];
-	this.game.roads.forEach((road)=> {
+	for(var x = 0;x<this.game.roads.length;x++){
+		var road = this.game.roads[x];
 		if(road.id!= this.id){
+			if(this.ext){
+				for(var y = 0;y<this.exempts.length;y++){
+					//console.log(road.id==this.exempts[y].id);
+					if(this.exempts[y].id == road.id){
+						console.log("YO");
+						continue;
+					}
+				}
+			}
 			 var lInt = this.line.intersect(road.lineL);
 			 var rInt = this.line.intersect(road.lineR);
 			 if((rInt!=null&&rInt.constructor.name =="Point")||(lInt!=null&&lInt.constructor.name =="Point")){
@@ -1743,12 +1751,13 @@ this.lineStuff();
 					
 				 }
 				 inters.push(road);
+				 console.log("HERE");
 			 }
 			
 			
 	}
 	}
-	);
+//	console.log(inters.length);
 	//this.line.clearInters();
 	if(inters.length>1){
 		this.delete()
@@ -2118,7 +2127,7 @@ class intersection{
 		var l = this.ax1[0].line.extend();
 		var l2 = this.ax2[0].line.extend();
 		var pos = l.intersect(l2);
-		this.render = new object(this.nodes[0].game,pos,"RECT",[40,40],"purple");
+		this.render = new object(this.nodes[0].game,pos,"RECT",[70,70],"purple");
 		l.delete();
 		l2.delete();
 		

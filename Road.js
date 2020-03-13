@@ -175,8 +175,20 @@ this.lineStuff();
     this.updateAttributes(point);
 	this.lineStuff();
 	var inters = [];
-	this.game.roads.forEach((road)=> {
+	for(var x = 0;x<this.game.roads.length;x++){
+		var road = this.game.roads[x];
 		if(road.id!= this.id){
+			if(this.ext){
+				var break = false
+				for(var y = 0;y<this.exempts.length;y++){
+					//console.log(road.id==this.exempts[y].id);
+					if(this.exempts[y].id == road.id){
+						console.log("YO");
+						var break = true;
+						continue;
+					}
+				}
+			}
 			 var lInt = this.line.intersect(road.lineL);
 			 var rInt = this.line.intersect(road.lineR);
 			 if((rInt!=null&&rInt.constructor.name =="Point")||(lInt!=null&&lInt.constructor.name =="Point")){
@@ -184,12 +196,13 @@ this.lineStuff();
 					
 				 }
 				 inters.push(road);
+				 console.log("HERE");
 			 }
 			
 			
 	}
 	}
-	);
+//	console.log(inters.length);
 	//this.line.clearInters();
 	if(inters.length>1){
 		this.delete()

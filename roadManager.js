@@ -315,7 +315,7 @@ class intersection{
 		var l = this.ax1[0].line.extend();
 		var l2 = this.ax2[0].line.extend();
 		var pos = l.intersect(l2);
-		this.render = new object(this.nodes[0].game,pos,"RECT",[40,40],"purple");
+		this.render = new object(this.nodes[0].game,pos,"RECT",[70,70],"purple");
 		l.delete();
 		l2.delete();
 		

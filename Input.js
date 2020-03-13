@@ -186,6 +186,9 @@ static processMouse(game, point) {
 					l.delete();
 					r.delete();
 					game.road = new Road(game,[P]);
+					game.road.tVec = vec;
+					game.road.ext = true;
+					game.road.exempts = inter.roads;
 					
 				}
 			}
@@ -194,12 +197,7 @@ static processMouse(game, point) {
 	  if(!ext){
       game.road = new Road(game, [P]);
 	  }
-	  game.road.ext = ext;
-	 
-	  
-	  if(ext){
-		  game.road.tVec = vec;
-	  }
+	
     } else {
       game.road.changePoint(p);
       game.road = null;
