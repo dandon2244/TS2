@@ -143,8 +143,8 @@ static processMouse(game, point) {
 	  if (game.road == null) {
 		for(var x = 0; x<game.intersections.length;x++){
 			var inter = game.intersections[x]
-			if(inter.render.pointWithinRender(point)){
-				P = inter.render.absPos.copy();
+			if(inter.render[0].pointWithinRender(point)||inter.render[1].pointWithinRender(point)){
+				P = inter.cent.copy();
 				ext = true;
 				var vec;
 				if(inter.ax1.length ==1){
@@ -189,6 +189,8 @@ static processMouse(game, point) {
 					game.road.tVec = vec;
 					game.road.ext = true;
 					game.road.exempts = inter.roads;
+					game.road.exLine = exLine;
+					
 				}
 			}
 		}
@@ -200,12 +202,22 @@ static processMouse(game, point) {
     } else {
       if(game.road.changePoint(p)){
 		if(game.road.ext){
-		  game.road.lB.render.colour = "blue";
-		  console.log("HERE");
+			var i = game.road.exLine.extend();
+			game.road.lB.absPos = i.intersect(game.road.leftL);
+			game.road.rE.absPos = i.intersect(game.road.rightL)
+			game.road.lB.update();
+			game.road.rE.update();
+			i.delete();
+
+			delete game.road.exLine;
+			delete game.road.exempts;
+		//  game.road.lB.render.colour = "blue";
+		//  console.log("HERE");
 	  }
+	  game.road.sR.deleteAll();
       game.road = null;
 	 
-	  console.log("YO");
+	 // console.log("YO");
 	  }
 	  else{
 		  game.road.sR.rendering = true;

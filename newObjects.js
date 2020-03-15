@@ -213,6 +213,19 @@ class object {
 		this.game.context.lineTo(end.x/z,-end.y/z);
 		this.game.context.stroke();
 	}
+	else if(this.type == "TRI"){
+		 this.game.context.beginPath();
+		 this.game.context.moveTo(0,0);
+		 this.game.context.lineWidth = 1/z;
+		 var p1 = this.size[0].minus(this.absPos);
+		 var p2 = this.size[1].minus(this.absPos);
+         this.game.context.lineTo(p1.x/z,-p1.y/z);
+		 this.game.context.lineTo(p2.x/z,-p2.y/z);
+		 this.game.context.lineTo(0,0);
+		 this.game.context.stroke();
+		 this.game.context.fill();
+		
+	}
 	this.game.context.restore();
     this.game.context.globalAlpha = 1;
   }
@@ -267,13 +280,23 @@ class object {
         rotatedPoint.x >= this.screenPos.x - this.screenSize[0] / 2 &&
         rotatedPoint.y <= this.screenPos.y + this.screenSize[1] / 2 &&
         rotatedPoint.y >= this.screenPos.y - this.screenSize[1] / 2
-      ) {
+      ) 
         return true;
-      } else return false;
-    }
-	else{
-		return false;
 	}
+	else if(this.type == "TRI"){
+		 var p = this.game.camera.screenToGamePos(pos);
+	     var area = Maths.triArea([this.absPos,this.size[0],this.size[1]]);
+		 var a1 = Maths.triArea([p,this.absPos,this.size[0]]);
+		 var a2 = Maths.triArea([p,this.absPos,this.size[1]]);
+		 var a3 = Maths.triArea([p,this.size[0],this.size[1]]);
+		 if(Maths.equals(a1+a2+a3,area)){
+			 return true	
+		 }
+	}
+	else{
+		return false
+	}
+	return false;
   }
 
   getPoints() {

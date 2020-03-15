@@ -1,15 +1,13 @@
 class roadManager{
 	static intersect(road1,road2){
+	
 		var nLine = road1.line.extend()
 		var lengths = [nLine.intersect(road2.lineL),nLine.intersect(road2.lineR)]
 		nLine.clearInters();
 		nLine.delete();
-		if(lengths[0] == null){
-			var incomeR = inters[0].lineR;
-			console.log("YO");
-		}
-		else if(lengths[1] == null){
-		var incomeR = inters[0].lineL;
+
+		if(lengths[0] == null||lengths[1] == null){
+			return false;
 		}
 		else{
 			lengths = lengths.map(x=>x.distanceBetween(road1.line.begPoint));
@@ -27,6 +25,12 @@ class roadManager{
 		road1.mRoad.addSubObject(rE.render);
 		var lI = lE.intersect(incomeR)
 		var rI = rE.intersect(incomeR)
+		var o = (incomeR.id == road2.lineL.id)?road2.lineR:road2.lineL
+		if(lE.intersect(incomeR) == null || lE.intersect(o) == null ||rE.intersect(incomeR) == null||rE.intersect(o) == null){
+			lE.delete();
+			rE.delete();
+			return false;
+		}
 		incomeR.render.colour = "red";
 
 		var lengths = [road1.lineL.begPoint.distanceBetween(lI.copy()),road1.lineR.begPoint.distanceBetween(rI.copy())]
@@ -241,7 +245,6 @@ class sNode{
 		this.id = randomID();
 	}
 	copy(){
-	//	console.log(this.line)
 		return new sNode(this.game,this.absPos,this.line)
 	}
 	update(line){
@@ -274,34 +277,24 @@ class sNode{
 class intersection{
 	constructor(rNs){
 		this.rNs = rNs;
-		this.id = randomID();
-		this.roads  = Object.keys(this.rNs);
 		this.nodes = Object.values(this.rNs);
-		this.aRoads = this.nodes.map(n=> n[0].line.road);
+		this.id = randomID();
 		this.game = this.nodes[0][0].game;
 		this.game.intersections.push(this);
-		for(var x =0;x<this.roads.length;x++){
-		   if(this.roads[x].lB){
-		   }
-		}
-		this.nodes = [].concat.apply([],this.nodes);
-		for(var x = 0; x<this.nodes.length;x++){
-			var node = this.nodes[x];
-			if(node.type == "end"){
-				for(var y =0;y<this.nodes.length;y++){
-					if(this.nodes[y].type =="beg"&& this.nodes[y].line.road.id!= node.line.road.id){
-						node.connections.push(this.nodes[y]);
-					}
-				}
-			}
-		}
 		
-		//this.nodes[0].render.rendering = false;
-		this.roads=this.aRoads;
+		
+	
+		
+		this.update();
+	}
+	update(){
+		this.nodes = Object.values(this.rNs);
+		this.roads = this.nodes.map(n=> n[0].line.road);
+		
+		this.nodes = [].concat.apply([],this.nodes);
 		this.ax1 = [this.roads[0]]
 		this.ax2 = [];
 		for(var x = 1;x<this.roads.length;x++){
-
 			if(this.roads[x].line.vector.parallel(this.roads[0].line.vector)){	
 				this.ax1.push(this.roads[x]);
 			}
@@ -309,19 +302,38 @@ class intersection{
 				this.ax2.push(this.roads[x]);
 			}
 		}
+			for(var x = 0; x<this.nodes.length;x++){
+				var node = this.nodes[x];
+				if(node.type == "end"){
+					node.connections = []
+					for(var y =0;y<this.nodes.length;y++){
+						if(this.nodes[y].type =="beg"&& this.nodes[y].line.road.id!= node.line.road.id){
+							node.connections.push(this.nodes[y]);
+						}
+					}
+				}
+		}
+		var aL = [this.ax1[0].lineL.extend(),this.ax1[0].lineR.extend()]
+		var aL2 =[this.ax2[0].lineL.extend(),this.ax2[0].lineR.extend()]
+		var p1 = [aL[0].intersect(aL2[0]),aL[1].intersect(aL2[0])]
+		var p2 = [aL[0].intersect(aL2[1]),aL[1].intersect(aL2[1])]
+		var t1 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p1[0],p2[0]],"purple");
+		var t2 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p2[0],p2[1]],"purple");
+		//var l = new Line(this.game,[p1[1] ,p2[0]])
+		//l.render.colour = "purple";
+		//l.width = 1.5;
+		//l.render.rendering = false;
+		//l.render.absPos.move(new Vector(0,0,1000));
+		this.render = [t1,t2,l];
+		aL[0].delete();
+		aL[1].delete();
+		aL2[0].delete();
+		aL2[1].delete();
 		var l = this.ax1[0].line.extend();
 		var l2 = this.ax2[0].line.extend();
-		var pos = l.intersect(l2);
-		this.render = new object(this.nodes[0].game,pos,"RECT",[70,70],"purple");
+		
+		this.cent = l.intersect(l2);
 		l.delete();
 		l2.delete();
-		
-		/*for(var x = 0;x<this.ax1.length;x++){
-			this.ax1[x].leftL.render.colour = "red";
-		}
-		for(var x = 0;x<this.ax2.length;x++){
-			this.ax2[x].leftL.render.colour = "pink";
-		}
-		this.roads = this.ax1.concat(this.ax2);*/
 	}
 }

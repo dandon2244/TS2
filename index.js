@@ -27,24 +27,14 @@ class Game {
     this.selected = null;
 	this.nodes = []
     this.cars = [];
-	this.l = new Line(this,[new Point(-100,0,3),new Point(100,0,3)]);
-	this.l2 = new Line(this,[new Point(0,100,3),new Point(0,0,3)]);
-	this.l2.intersect(this.l);
-	//this.l2 = new Line(this,new Point(0,100,3),new Vector(0,-1),1000);
-	//this.l2.vector = this.l2.vector.rotate(-90-this.l2.vector.getAngle());
-	//this.l2.update();
-	//this.l2.intersect(this.l);
+	this.trig = new object(this,new Point(-50,100,20),"TRI",[new Point(-30,0),new Point(-100,10)],"BLUE");
+
 	for(var x =0;x<1;x++){
 		new Car(new Point(0, 0, 1), "purple", this);
 	}
-	new Car(new Point(10,10,2),"c",this);
-	//this.cars[0].delete();
+	new Car(new Point(10,0,2),"c",this);
     var x = 0;
 	
-	//this.line = new Line(this,new Point(10,0,3),new Vector(1,1),30);
-	//this.line2 = new Line(this,new Point(20,0,3), new Vector (-1.000001,1),30);
-    //this.line.intersect(this.line2)
-   //this.cars.push(new Car(new Point(100 + x * 100, 0, 1), "purple", this));
     this.p1 = new object(this,new Point(-100,100),"CIRCLE",[10],"purple");
 	this.p2 = new object(this, new Point(100,200),"CIRCLE",[10],"green");
 	this.cars[0].move(this.p1.absPos.minus(this.cars[0].position),false);

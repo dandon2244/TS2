@@ -25,7 +25,7 @@ static equals(v1,v2){
 		return false;
 	}
 	if(typeof v1 == "number"){
-		if(Maths.round(v1,5) == Maths.round(v2,5))
+		if(Maths.round(v1,6) == Maths.round(v2,6))
 			return true
 		return false;
 	
@@ -41,5 +41,12 @@ static equals(v1,v2){
 		}
 	}
 	return false;
+}
+
+static triArea(points){
+	if(points.length!= 3){
+		return null;
+	}
+	return Math.sqrt(((points[0].x*(points[1].y-points[2].y)+points[1].x*(points[2].y-points[0].y) + points[2].x*(points[0].y-points[1].y))/2)**2)
 }
 }

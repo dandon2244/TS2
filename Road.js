@@ -1,6 +1,8 @@
  class Road {
   constructor(game, Points) {
     this.game = game;
+	this.endInt = null;
+	this.begInt = null;
     this.game.roads.push(this);
     this.Points = Points;
     this.width = 100;
@@ -166,6 +168,7 @@ this.lineStuff();
 		this.rB.update();
 		this.sR.setAbsPos(this.mRoad.absPos.copy().add3(new Vector(0,0,10)));
 		this.sR.setAngle(this.mRoad.angle);
+		this.lineStuff();
 		
 		
   }
@@ -190,28 +193,38 @@ this.lineStuff();
 					if(this.exempts[y].id == road.id){
 					
 						var b = true;
-					//	console.log("NOPE")
 						continue;
 					}
 				}
 			}
 			if(b){
 				this.line.clearInters();
-				//console.log("OH");
 				continue;
 			}
 			
 			 var lInt = this.line.intersect(road.lineL);
 			 var rInt = this.line.intersect(road.lineR);
 			 if((rInt!=null&&rInt.constructor.name =="Point")||(lInt!=null&&lInt.constructor.name =="Point")){
-				 if(inters.length == 1){
-					
-				 }
 				 inters.push(road);
-				
+			 }
+			 else{
+				 lInt = this.lineL.intersect(road.lineL);
+				 rInt = this.lineL.intersect(road.lineR);
+				 if((rInt!=null&&rInt.constructor.name =="Point")||(lInt!=null&&lInt.constructor.name =="Point")){
+					inters.push(road);
+				}
+				else{
+					lInt = this.lineR.intersect(road.lineL);
+					rInt = this.lineR.intersect(road.lineR);
+					 if((rInt!=null&&rInt.constructor.name =="Point")||(lInt!=null&&lInt.constructor.name =="Point")){
+					inters.push(road);
+					}
+				}
 			 }
 			
-			
+		this.line.clearInters();
+		this.lineL.clearInters();
+		this.lineR.clearInters();
 	}
 	}
 	if(inters.length>1){
@@ -220,6 +233,9 @@ this.lineStuff();
 	if(inters.length == 1){
 		var otherRoad = inters[0];
 		var others = roadManager.intersect(this,otherRoad)
+		if(others == false){
+			return false;
+		}
 	}
 	
 	roadManager.createPaths(this);
@@ -232,8 +248,8 @@ this.lineStuff();
 		roadManager.interway(this,others)
 	}
 	
-	this.line.clearInters();
 	
+	this.lineStuff();
 	return true;
 	
   }
