@@ -2352,8 +2352,6 @@ class Game {
     this.selected = null;
 	this.nodes = []
     this.cars = [];
-	this.trig = new object(this,new Point(-50,100,20),"TRI",[new Point(-30,0),new Point(-100,10)],"BLUE");
-
 	for(var x =0;x<1;x++){
 		new Car(new Point(0, 0, 1), "purple", this);
 	}
