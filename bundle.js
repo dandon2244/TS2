@@ -1615,6 +1615,8 @@ class object {
  class Road {
   constructor(game, Points) {
     this.game = game;
+	this.endInt = null;
+	this.begInt = null;
     this.game.roads.push(this);
     this.Points = Points;
     this.width = 100;
@@ -1997,6 +1999,7 @@ class roadManager{
 		roadManager.lineUpdate(begRoad.rightL);
 		roadManager.lineUpdate(endRoad.leftL);
 		roadManager.lineUpdate(endRoad.rightL);
+		//roadManager.lineUpdate(
 		
 		road1.lineStuff();
 		road2.delete();
@@ -2090,8 +2093,11 @@ class roadManager{
 		endRoad.rightL.clearInters();
 		road.leftL.clearInters();
 		road.rightL.clearInters();
-		
-		var  i = new intersection({begRoad:[begRoad.lE,begRoad.rB],road:[road.lE,road.rB],endRoad:[endRoad.rE,endRoad.lB]})
+		var rNs = {}
+		rNs[begRoad.id] = [begRoad.lE,begRoad.rB]
+		rNs[road.id] = [road.lE,road.lB]
+		rNs[endRoad.id] = [endRoad.rE,endRoad.lB];
+		var  i = new intersection(rNs)
 		
 		lE.delete();
 		rE.delete();
@@ -2177,19 +2183,19 @@ class intersection{
 		this.id = randomID();
 		this.game = this.nodes[0][0].game;
 		this.game.intersections.push(this);
-		
-		
-	
-		
 		this.update();
 	}
 	update(){
 		this.nodes = Object.values(this.rNs);
 		this.roads = this.nodes.map(n=> n[0].line.road);
+		for(var x = 0;x<this.roads.length;x++){
+			this.roads
+		}
 		
 		this.nodes = [].concat.apply([],this.nodes);
 		this.ax1 = [this.roads[0]]
 		this.ax2 = [];
+		
 		for(var x = 1;x<this.roads.length;x++){
 			if(this.roads[x].line.vector.parallel(this.roads[0].line.vector)){	
 				this.ax1.push(this.roads[x]);
@@ -2209,17 +2215,14 @@ class intersection{
 					}
 				}
 		}
+		
 		var aL = [this.ax1[0].lineL.extend(),this.ax1[0].lineR.extend()]
 		var aL2 =[this.ax2[0].lineL.extend(),this.ax2[0].lineR.extend()]
 		var p1 = [aL[0].intersect(aL2[0]),aL[1].intersect(aL2[0])]
 		var p2 = [aL[0].intersect(aL2[1]),aL[1].intersect(aL2[1])]
 		var t1 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p1[0],p2[0]],"purple");
 		var t2 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p2[0],p2[1]],"purple");
-		//var l = new Line(this.game,[p1[1] ,p2[0]])
-		//l.render.colour = "purple";
-		//l.width = 1.5;
-		//l.render.rendering = false;
-		//l.render.absPos.move(new Vector(0,0,1000));
+		
 		this.render = [t1,t2,l];
 		aL[0].delete();
 		aL[1].delete();
@@ -2231,6 +2234,7 @@ class intersection{
 		this.cent = l.intersect(l2);
 		l.delete();
 		l2.delete();
+		
 	}
 }
 
