@@ -584,8 +584,8 @@ static processMouse(game, point) {
 					game.road.ext = true;
 					game.road.exempts = inter.roads;
 					game.road.exLine = exLine;
-					
-				}
+					inter.rNs[game.road.id] = [game.road.lB,game.road.rE];
+					game.road.temp = inter;				}
 			}
 		}
 	 
@@ -602,11 +602,11 @@ static processMouse(game, point) {
 			game.road.lB.update();
 			game.road.rE.update();
 			i.delete();
-
+			game.road.temp.update();
+			delete game.road.temp;
 			delete game.road.exLine;
 			delete game.road.exempts;
-		//  game.road.lB.render.colour = "blue";
-		//  console.log("HERE");
+			
 	  }
 	  game.road.sR.deleteAll();
       game.road = null;
@@ -2100,7 +2100,7 @@ class roadManager{
 		road.rightL.clearInters();
 		var rNs = {}
 		rNs[begRoad.id] = [begRoad.lE,begRoad.rB]
-		rNs[road.id] = [road.lE,road.lB]
+		rNs[road.id] = [road.lE,road.rB]
 		rNs[endRoad.id] = [endRoad.rE,endRoad.lB];
 		var  i = new intersection(rNs)
 		
@@ -2193,32 +2193,31 @@ class intersection{
 	}
 	update(){
 		for(var [key,value] of Object.entries(this.rNs)){
+				var road = this.game.getRoad(key)
 				var n = value[0]
 				var side = n.line.tag
 				if(side == "left"){
 					if(n.type == "end"){
-						console.log("end")
+						road.endInt = this;
 					}
 					else{
-						console.log("beg");
+						road.begInt = this;
 					}
 				}
 				else{
 					if(n.type == "end"){
-						console.log("beg")
+						road.begInt = this;
 					}
 					else{
-						console.log("end");
+						road.endInt = this;
 					}
 				}
 		}
 		this.nodes = Object.values(this.rNs);
 		this.roads = Object.keys(this.rNs).map(road=>this.game.getRoad(road));
-		for(var x = 0;x<this.roads.length;x++){
-			this.roads
-		}
 		
 		this.nodes = [].concat.apply([],this.nodes);
+
 		this.ax1 = [this.roads[0]]
 		this.ax2 = [];
 		

@@ -190,8 +190,8 @@ static processMouse(game, point) {
 					game.road.ext = true;
 					game.road.exempts = inter.roads;
 					game.road.exLine = exLine;
-					
-				}
+					inter.rNs[game.road.id] = [game.road.lB,game.road.rE];
+					game.road.temp = inter;				}
 			}
 		}
 	 
@@ -208,11 +208,11 @@ static processMouse(game, point) {
 			game.road.lB.update();
 			game.road.rE.update();
 			i.delete();
-
+			game.road.temp.update();
+			delete game.road.temp;
 			delete game.road.exLine;
 			delete game.road.exempts;
-		//  game.road.lB.render.colour = "blue";
-		//  console.log("HERE");
+			
 	  }
 	  game.road.sR.deleteAll();
       game.road = null;
