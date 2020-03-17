@@ -139,6 +139,8 @@ class roadManager{
 		road.leftL = new Line(road.game,road.leftPath.absPos.copy(),road.line.vector.copy(),road.length,false);
 		road.leftPath.addSubObject(road.leftL.render);
 		road.rightL = new Line(road.game,road.rightPath.absPos.copy(),road.line.vector.times(-1),road.length,false);
+		road.rightL.tag = "right";
+	    road.leftL.tag = "left";
 		road.rightL.road = road;
 		road.leftL.road = road;
 		road.rightPath.addSubObject(road.rightL.render);
@@ -284,12 +286,33 @@ class intersection{
 		this.nodes = Object.values(this.rNs);
 		this.id = randomID();
 		this.game = this.nodes[0][0].game;
+		this.roads = Object.keys(this.rNs).map(road=>this.game.getRoad(road));
 		this.game.intersections.push(this);
 		this.update();
 	}
 	update(){
+		for(var [key,value] of Object.entries(this.rNs)){
+				var n = value[0]
+				var side = n.line.tag
+				if(side == "left"){
+					if(n.type == "end"){
+						console.log("end")
+					}
+					else{
+						console.log("beg");
+					}
+				}
+				else{
+					if(n.type == "end"){
+						console.log("beg")
+					}
+					else{
+						console.log("end");
+					}
+				}
+		}
 		this.nodes = Object.values(this.rNs);
-		this.roads = this.nodes.map(n=> n[0].line.road);
+		this.roads = Object.keys(this.rNs).map(road=>this.game.getRoad(road));
 		for(var x = 0;x<this.roads.length;x++){
 			this.roads
 		}

@@ -144,6 +144,23 @@ class Game {
     }
 
   }
+  getRoad(id){
+	  var func = function(x){
+		  if(x.id == id)
+			  return true
+		  return false;
+	  }
+	  return getByFunc(this.roads,func);
+  }
+  getCar(id){
+	  var func = function(x){
+		  if(x.id == id)
+			  return true
+		  return false
+	  }
+	  return getByFunc(this.cars,func);
+  }
+  
   millUpdate(){
 	  if(!this.m)this.m = 0;
 	  this.m++;

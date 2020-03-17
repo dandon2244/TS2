@@ -244,6 +244,8 @@ this.lineStuff();
 	
 	this.rB.update(this.rightL);
 	this.rE.update(this.rightL);
+	
+	
 	if(inters.length ==1){
 		roadManager.interway(this,others)
 	}

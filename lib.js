@@ -12,15 +12,16 @@ var rotatePoint = function(angle, origin, pos) {
   dis = dis2.minus(dis);
   return pos.add(dis);
 }
-var getByID = function(id,arr){
-for(var x = 0;x<arr.length;x++){
-	var obj = arr[x];
-	if(obj.id == id){
-		return obj;
+function getByFunc(l,func){
+	var cur;
+	for(var x =0;x<l.length;x++){
+		cur = l[x];
+		if(func(cur)){
+			return cur
+		}
 	}
-}
 	return null;
-	}
+}
 
 function keyToCode(key){
 	for(const [k,v] of Object.entries(keyCodes)){
