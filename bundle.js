@@ -422,6 +422,10 @@ static genKeyFunctions() {
         if (game.mouseMode != "roadGreen") {
           game.changeMouseMode("roadGreen");
         } else {
+			if(game.road){
+				game.road.delete();
+				game.road = null
+			}
           game.changeMouseMode("auto");
         }
       } else {
@@ -647,6 +651,18 @@ function getByFunc(l,func){
 		}
 	}
 	return null;
+}
+
+function getAllByFunc(l,func){
+	var ret = []
+	var cur;
+	for(var x = 0;x<l.length;x++){
+		cur = l[x];
+		if(func(cur)){
+			ret.push(cur);
+		}
+	}
+	return ret;
 }
 
 function keyToCode(key){
@@ -1718,6 +1734,7 @@ this.lineStuff();
 	if(this.ext){
 		var l = new Line(this.game,this.Points[0],this.tVec,null);
 		this.Points[1] = projectOntoLine(this.Points[1],l);
+		
 		l.delete();
 	}
     
@@ -1793,10 +1810,24 @@ this.lineStuff();
   delete() {
     this.mRoad.deleteAll();
     this.game.roads.splice(this.game.roads.indexOf(this),1);
+	if(this.begInt){
+		delete this.begInt.rNs[this.id]
+		this.begInt.update()
+	}
+	else if(this.endInt){
+		delete this.endInt.rNs[this.id]
+		this.endInt.update()
+	}
   }
   changePoint(point) {
     this.Points[1] = point;
-    this.updateAttributes(point);
+	if(this.ext){
+		var temp = this.Points[1].copy()
+		this.Points[1] = this.Points[0]
+		this.Points[0] = temp;
+		console.log(this.Points);
+	}
+    this.updateAttributes(this.Points[1].copy());
 	this.lineStuff();
 	var inters = [];
 	for(var x = 0;x<this.game.roads.length;x++){
@@ -2240,25 +2271,33 @@ class intersection{
 					}
 				}
 		}
-		
-		var aL = [this.ax1[0].lineL.extend(),this.ax1[0].lineR.extend()]
-		var aL2 =[this.ax2[0].lineL.extend(),this.ax2[0].lineR.extend()]
-		var p1 = [aL[0].intersect(aL2[0]),aL[1].intersect(aL2[0])]
-		var p2 = [aL[0].intersect(aL2[1]),aL[1].intersect(aL2[1])]
-		var t1 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p1[0],p2[0]],"purple");
-		var t2 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p2[0],p2[1]],"purple");
-		
-		this.render = [t1,t2,l];
-		aL[0].delete();
-		aL[1].delete();
-		aL2[0].delete();
-		aL2[1].delete();
-		var l = this.ax1[0].line.extend();
-		var l2 = this.ax2[0].line.extend();
-		
-		this.cent = l.intersect(l2);
-		l.delete();
-		l2.delete();
+		if(this.render){
+			this.render.forEach(x=>x.delete());
+		}
+		if(this.ax1.length >0 && this.ax2.length >0){
+	
+			var aL = [this.ax1[0].lineL.extend(),this.ax1[0].lineR.extend()]
+			var aL2 =[this.ax2[0].lineL.extend(),this.ax2[0].lineR.extend()]
+			var p1 = [aL[0].intersect(aL2[0]),aL[1].intersect(aL2[0])]
+			var p2 = [aL[0].intersect(aL2[1]),aL[1].intersect(aL2[1])]
+			var t1 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p1[0],p2[0]],"purple");
+			var t2 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p2[0],p2[1]],"purple");
+			
+			this.render = [t1,t2];
+			aL[0].delete();
+			aL[1].delete();
+			aL2[0].delete();
+			aL2[1].delete();
+			var l = this.ax1[0].line.extend();
+			var l2 = this.ax2[0].line.extend();
+			
+			this.cent = l.intersect(l2);
+			l.delete();
+			l2.delete();
+		}
+		else{
+			
+		}
 		
 	}
 }
@@ -2464,7 +2503,7 @@ class Game {
 				car.rotate(r.lB.line.vector.getAngle()-car.angle,false);
 				car.crash = false;
 		}
-		_this.timeF(2000,spawn)
+		_this.timeF(1000,spawn)
 	}
 	spawn();
 	
@@ -2549,6 +2588,7 @@ class Game {
 		}
 	}
     g.context.fillStyle = "#fcf2d2";
+	g.context.fillStyle ="white";
     g.context.fillRect(0, 0, g.canvas.width, g.canvas.height);
     if (this.running) {
 		

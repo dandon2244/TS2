@@ -339,25 +339,33 @@ class intersection{
 					}
 				}
 		}
-		
-		var aL = [this.ax1[0].lineL.extend(),this.ax1[0].lineR.extend()]
-		var aL2 =[this.ax2[0].lineL.extend(),this.ax2[0].lineR.extend()]
-		var p1 = [aL[0].intersect(aL2[0]),aL[1].intersect(aL2[0])]
-		var p2 = [aL[0].intersect(aL2[1]),aL[1].intersect(aL2[1])]
-		var t1 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p1[0],p2[0]],"purple");
-		var t2 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p2[0],p2[1]],"purple");
-		
-		this.render = [t1,t2,l];
-		aL[0].delete();
-		aL[1].delete();
-		aL2[0].delete();
-		aL2[1].delete();
-		var l = this.ax1[0].line.extend();
-		var l2 = this.ax2[0].line.extend();
-		
-		this.cent = l.intersect(l2);
-		l.delete();
-		l2.delete();
+		if(this.render){
+			this.render.forEach(x=>x.delete());
+		}
+		if(this.ax1.length >0 && this.ax2.length >0){
+	
+			var aL = [this.ax1[0].lineL.extend(),this.ax1[0].lineR.extend()]
+			var aL2 =[this.ax2[0].lineL.extend(),this.ax2[0].lineR.extend()]
+			var p1 = [aL[0].intersect(aL2[0]),aL[1].intersect(aL2[0])]
+			var p2 = [aL[0].intersect(aL2[1]),aL[1].intersect(aL2[1])]
+			var t1 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p1[0],p2[0]],"purple");
+			var t2 = new object(this.game,p1[1].add3(new Vector(0,0,100)),"TRI",[p2[0],p2[1]],"purple");
+			
+			this.render = [t1,t2];
+			aL[0].delete();
+			aL[1].delete();
+			aL2[0].delete();
+			aL2[1].delete();
+			var l = this.ax1[0].line.extend();
+			var l2 = this.ax2[0].line.extend();
+			
+			this.cent = l.intersect(l2);
+			l.delete();
+			l2.delete();
+		}
+		else{
+			
+		}
 		
 	}
 }

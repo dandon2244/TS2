@@ -103,6 +103,7 @@ this.lineStuff();
 	if(this.ext){
 		var l = new Line(this.game,this.Points[0],this.tVec,null);
 		this.Points[1] = projectOntoLine(this.Points[1],l);
+		
 		l.delete();
 	}
     
@@ -178,10 +179,24 @@ this.lineStuff();
   delete() {
     this.mRoad.deleteAll();
     this.game.roads.splice(this.game.roads.indexOf(this),1);
+	if(this.begInt){
+		delete this.begInt.rNs[this.id]
+		this.begInt.update()
+	}
+	else if(this.endInt){
+		delete this.endInt.rNs[this.id]
+		this.endInt.update()
+	}
   }
   changePoint(point) {
     this.Points[1] = point;
-    this.updateAttributes(point);
+	if(this.ext){
+		var temp = this.Points[1].copy()
+		this.Points[1] = this.Points[0]
+		this.Points[0] = temp;
+		console.log(this.Points);
+	}
+    this.updateAttributes(this.Points[1].copy());
 	this.lineStuff();
 	var inters = [];
 	for(var x = 0;x<this.game.roads.length;x++){

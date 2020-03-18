@@ -23,6 +23,18 @@ function getByFunc(l,func){
 	return null;
 }
 
+function getAllByFunc(l,func){
+	var ret = []
+	var cur;
+	for(var x = 0;x<l.length;x++){
+		cur = l[x];
+		if(func(cur)){
+			ret.push(cur);
+		}
+	}
+	return ret;
+}
+
 function keyToCode(key){
 	for(const [k,v] of Object.entries(keyCodes)){
 		if(v ==key){

@@ -114,7 +114,7 @@ class Game {
 				car.rotate(r.lB.line.vector.getAngle()-car.angle,false);
 				car.crash = false;
 		}
-		_this.timeF(2000,spawn)
+		_this.timeF(1000,spawn)
 	}
 	spawn();
 	
@@ -199,6 +199,7 @@ class Game {
 		}
 	}
     g.context.fillStyle = "#fcf2d2";
+	g.context.fillStyle ="white";
     g.context.fillRect(0, 0, g.canvas.width, g.canvas.height);
     if (this.running) {
 		

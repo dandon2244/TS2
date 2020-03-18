@@ -28,6 +28,10 @@ static genKeyFunctions() {
         if (game.mouseMode != "roadGreen") {
           game.changeMouseMode("roadGreen");
         } else {
+			if(game.road){
+				game.road.delete();
+				game.road = null
+			}
           game.changeMouseMode("auto");
         }
       } else {
